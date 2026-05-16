@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>SCADA MASTER v3 - Producción</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link id="favicon" rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect x=%2210%22 y=%2210%22 width=%2280%22 height=%2260%22 rx=%225%22 fill=%22%234c1d95%22 stroke=%22%237c3aed%22 stroke-width=%225%22/><path d=%22M30 70 L20 90 L80 90 L70 70%22 fill=%22%234c1d95%22 stroke=%22%237c3aed%22 stroke-width=%225%22/></svg>">
+</head>
+
+<body>
+  <!-- Alarmas globales -->
+  <div id="alarm-banner" class="alarm-banner alarm-banner--hidden" role="alert" aria-live="polite">
+    <div class="alarm-banner__line1" id="alarm-line-1"></div>
+    <div class="alarm-banner__line2" id="alarm-line-2"></div>
+  </div>
+
+  <div class="header">
+    <div class="logo-title">
+      <span class="app-title">SCADA MASTER v3</span>
+    </div>
+    <div class="header-info">
+      <!-- LEDs de Estado y Producción -->
+      <div id="led-estado-container" class="header-led-item">
+        <div id="led-estado" class="led-header"></div>
+        <span id="txt-estado" class="header-led-txt">ESTADO</span>
+      </div>
+      <div id="led-ciclo-container" class="header-led-item">
+        <div id="led-ciclo" class="led-header"></div>
+        <span id="txt-ciclo" class="header-led-txt">PARADA</span>
+      </div>
+
+      <div id="reloj">--/--/-- --:--:--</div>
+      <div id="status" class="offline">○ PLC OFFLINE</div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="sidebar">
+      <!-- Menú reducido a las páginas principales solicitadas -->
+      <div class="menu-link active" data-page="home">A- INICIO</div>
+      <div class="menu-link" data-page="regs">B- REGISTROS</div>
+      <div class="menu-link" data-page="layout">C- LAYOUT GENERAL</div>
+      <div class="menu-link" data-page="m1">D- MÁQUINA 1</div>
+      <div class="menu-link" data-page="recipes">E- RECETAS</div>
+      <div class="menu-link" data-page="alarms">F- ALARMAS</div>
+      
+      <!-- Enlaces externos -->
+      <div style="margin-top: 40px; border-top: 1px solid #333; padding-top: 10px;"></div>
+      <a href="analytics.html" target="_blank"
+        style="display: block; padding: 10px 30px; color: var(--purple-light); text-decoration: none; font-size: 0.85em; font-weight: bold; letter-spacing: 1px;">
+        ANALÍTICA
+      </a>
+      <a href="doc/manual.html" target="_blank"
+        style="display: block; padding: 10px 30px; color: var(--text-muted); text-decoration: none; font-size: 0.85em; font-weight: bold; letter-spacing: 1px;">
+        MANUAL / AYUDA
+      </a>
+
+      <!-- LOGO EMPRESA -->
+      <div class="sidebar-footer">
+        <img src="img/MILOGO.png" alt="Logo Empresa" style="max-width: 140px; height: auto;">
+      </div>
+    </div>
+
+    <!-- CONTENEDOR DE PÁGINAS DINÁMICAS -->
+    <div id="main-content-area">
+      <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+        <h2>Cargando SCADA...</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts base -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/tags_dict.js"></script>
+  <script src="js/alarm-banner.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

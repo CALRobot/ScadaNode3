@@ -1,0 +1,86 @@
+<div id="page-recipes" class="page-container content">
+  <div class="recipes-header">
+    <h2 class="m1-title">GESTIÓN DE RECETAS</h2>
+  </div>
+
+  <div class="recipes-layout">
+    <!-- Zona Superior: Selección de Recetas -->
+    <div class="machine-card recipes-selection-card">
+      <div class="card-header-with-actions">
+        <h4>Base de Datos de Recetas (JSON)</h4>
+        <button class="btn btn-sm btn-primary" id="recipes-btn-refresh">🔄 REFRESCAR</button>
+      </div>
+      <div class="recipes-table-container">
+        <table class="tbl" id="recipes-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Última Actualización</th>
+              <th style="text-align:right;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" style="text-align:center;">Cargando recetas...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="recipes-bottom-grid">
+      <!-- Zona Inferior Izquierda: Edición -->
+      <div class="machine-card recipe-edit-card">
+        <h4>Editor de Receta</h4>
+        <div class="recipe-form">
+          <div class="row">
+            <span>Nombre</span>
+            <input id="recipe-name" class="inp" type="text" style="flex:1;" placeholder="Nombre de la receta">
+          </div>
+          <div class="row">
+            <span>Descripción</span>
+            <input id="recipe-desc" class="inp" type="text" style="flex:1;" placeholder="Descripción corta">
+          </div>
+
+          <div id="recipe-fields" class="recipe-fields-grid">
+            <!-- Dinámico -->
+          </div>
+
+          <div class="recipe-form-actions">
+            <button class="btn btn-secondary" id="recipe-btn-new">NUEVO</button>
+            <button class="btn btn-primary" id="recipe-btn-save">GUARDAR</button>
+            <button class="btn btn-danger" id="recipe-btn-delete">ELIMINAR</button>
+          </div>
+          <div id="recipe-msg" class="recipe-status-msg"></div>
+        </div>
+      </div>
+
+      <!-- Zona Inferior Derecha: Estado PLC -->
+      <div class="machine-card recipe-plc-card">
+        <div class="card-header-with-actions">
+          <h4>Receta Actual en PLC1</h4>
+          <div class="badge-receta"><span id="recipes-val-receta-nro">---</span></div>
+        </div>
+        
+        <div class="plc-table-container">
+          <table class="tbl" id="plc-active-table">
+            <thead>
+              <tr>
+                <th>Parámetro (Tag)</th>
+                <th style="text-align:right;">Valor Real</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dinámico -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="plc-load-zone">
+          <button class="btn btn-primary btn-large" id="recipe-btn-load" style="width:100%; margin-top:20px; letter-spacing:1px;">
+            🚀 ENVIAR RECETA AL PLC
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

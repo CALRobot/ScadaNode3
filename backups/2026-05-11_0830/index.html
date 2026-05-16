@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>SCADA MASTER v3 - Demo</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/modern.css">
+  <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect x=%2210%22 y=%2210%22 width=%2280%22 height=%2260%22 rx=%225%22 fill=%22black%22 stroke=%22%230f0%22 stroke-width=%225%22/><path d=%22M30 70 L20 90 L80 90 L70 70%22 fill=%22black%22 stroke=%22%230f0%22 stroke-width=%225%22/></svg>">
+  <style>
+    /* Estilos para el LED de Estado General */
+    .status-led-large {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 15px;
+      vertical-align: middle;
+      background-color: #333;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+      transition: all 0.3s ease;
+    }
+    .status-led--manual { background-color: #007bff; box-shadow: 0 0 15px #007bff; } /* Azul */
+    .status-led--auto { background-color: #28a745; box-shadow: 0 0 15px #28a745; }   /* Verde */
+    .status-led--alarm { background-color: #dc3545; box-shadow: 0 0 15px #dc3545; }  /* Rojo */
+
+    /* Estilos para Sinóptico M1-PRO */
+    .synoptic-overlay {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #7c3aed;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+      backdrop-filter: blur(5px);
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+    .synoptic-overlay:hover {
+      border-color: #a78bfa;
+      transform: scale(1.05);
+    }
+    .overlay-label { font-size: 0.7em; color: #a78bfa; font-weight: bold; display: block; margin-bottom: 2px; }
+    .overlay-value { font-size: 1.2em; font-weight: bold; color: #fff; }
+    .overlay-unit { font-size: 0.8em; color: #777; margin-left: 2px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-title">
+      <span class="app-title">SCADA MASTER v3</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <div id="reloj">--/--/-- --:--:--</div>
+      <div id="status" class="offline">PLC OFFLINE</div>
+      <button id="theme-toggle" class="btn btn-sm btn-secondary" style="border-radius: 4px; border: 1px solid #fff; display: flex; align-items: center; gap: 5px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6.364 6.364 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+        Estilo
+      </button>
+    </div>
+  </div>
+
+  <!-- Alarmas globales (visible en todas las páginas) -->
+  <div id="alarm-banner" class="alarm-banner alarm-banner--hidden" role="alert" aria-live="polite">
+    <div class="alarm-banner__line1" id="alarm-line-1"></div>
+    <div class="alarm-banner__line2" id="alarm-line-2"></div>
+  </div>
+
+  <div class="wrapper">
+    <div class="sidebar">
+      <div class="menu-link active" data-page="page-home">A- INICIO</div>
+      <div class="menu-link" data-page="page-regs">B- REGISTROS</div>
+      <div class="menu-link" data-page="page-m1">C- MÁQUINA 1</div>
+      <div class="menu-link" data-page="page-m1-pro" style="border-left: 3px solid #ff00ff; color: #ff00ff; font-weight: bold;">M1-PRO (Beta)</div>
+      <div class="menu-link" data-page="page-layout-total">D- LAYOUT</div>
+      <div class="menu-link" data-page="page-recipes">E- RECETAS</div>
+      <div class="menu-link" data-page="page-alarms">F- ALARMAS</div>
+      
+      <div style="margin-top: 40px; border-top: 1px solid #222; padding-top: 10px;"></div>
+      <a href="analytics.html" target="_blank" style="display: block; padding: 10px 20px; color: #7c3aed; text-decoration: none; font-size: 11px; font-weight: bold; letter-spacing: 1px;">📊 ANALÍTICA / PRODUCCIÓN</a>
+      <a href="doc/manual.html" target="_blank" style="display: block; padding: 10px 20px; color: #555; text-decoration: none; font-size: 11px; font-weight: bold; letter-spacing: 1px;">? MANUAL / AYUDA</a>
+      
+      <!-- LOGO DE EMPRESA AL PIE REAL -->
+      <div class="sidebar-footer" style="margin-top: auto; padding: 20px; text-align: center;">
+        <img src="img/MILOGO.png" alt="Logo Empresa" style="max-width: 140px; height: auto;">
+      </div>
+    </div>
+
+    <!-- Página simple de inicio -->
+    <div id="page-home" class="content active">
+      <h3>Prueba de comunicación con PLC</h3>
+
+      <p>Estado PLC:</p>
+      <pre id="msg"></pre>
+
+      <h4>Primeros 10 registros (R0..R9):</h4>
+      <ul id="regs-list"></ul>
+    </div>
+
+    <!-- Nueva página de REGISTROS -->
+    <div id="page-regs" class="content">
+      <h3>REGISTROS DEL PLC (Lectura / Escritura)</h3>
+      <div class="main-grid">
+        <div class="column">
+          <h4>LECTURA (R0 - R59)</h4>
+          <div id="list-read"></div>
+        </div>
+        <div class="column">
+          <h4>ESCRITURA (R60 - R119)</h4>
+          <div id="list-write"></div>
+        </div>
+      </div>
+    </div>
+	
+
+  <!-- Página de MÁQUINA 1 -->
+  <div id="page-m1" class="content">
+  <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+    <h3 style="margin: 0;">MÁQUINA 1 - PLC1</h3>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div id="m1-status-led" class="status-led-large"></div>
+      <span id="m1-status-text" style="font-size: 1.1em; font-weight: bold; color: #777;">CARGANDO...</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; border-left: 1px solid #444; padding-left: 20px;">
+      <div id="m1-ciclo-led-header" class="status-led-large" style="background-color: #222;"></div>
+      <span id="m1-ciclo-text-header" style="font-size: 0.9em; color: #aaa; font-weight: bold;">CICLO</span>
+    </div>
+  </div>
+
+  <!-- Línea de recetas -->
+  <div class="machine-card m1-recetas">
+    <div class="row">
+      <span>Receta deseada:</span>
+      <input id="m1-receta-deseada" class="inp inp-sm" type="text">
+      <button class="btn btn-sm btn-primary" onclick="m1_cmdAplicarReceta()">Aplicar</button>
+    </div>
+    <div class="row">
+      <span>Receta en ejecución:</span>
+      <span id="m1-receta-actual">---</span>
+    </div>
+  </div>
+
+  <div class="m1-layout">
+    <!-- Columna izquierda: mandos -->
+    <div class="m1-col">
+      <div class="machine-card">
+        <h4>Hidráulica</h4>
+        <div class="row">
+          <span>Pompa hidráulica</span>
+          <div class="led" id="m1-led-pompa"></div>
+          <button class="btn btn-sm btn-success" onclick="m1_cmdPompaStart()">Start</button>
+          <button class="btn btn-sm btn-danger" onclick="m1_cmdPompaStop()">Stop</button>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Resistencias</h4>
+        <div class="row">
+          <span>Resistencias</span>
+          <div class="led" id="m1-led-res"></div>
+          <button class="btn btn-sm btn-success" onclick="m1_cmdResStart()">Start</button>
+          <button class="btn btn-sm btn-danger" onclick="m1_cmdResStop()">Stop</button>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Modo de trabajo</h4>
+        <div class="row">
+          <span>Modo actual:</span>
+          <span id="m1-modo-texto">?</span>
+        </div>
+        <div class="row">
+          <button class="btn btn-sm btn-secondary" onclick="m1_cmdModoManual()">Manual</button>
+          <button class="btn btn-sm btn-primary" onclick="m1_cmdModoAuto()">Automático</button>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Ciclo automático</h4>
+        <div class="row">
+          <span>Ciclo</span>
+          <div class="led" id="m1-led-ciclo"></div>
+          <span id="m1-ciclo-texto">---</span>
+        </div>
+        <div class="row">
+          <button class="btn btn-sm btn-success" onclick="m1_cmdStartCiclo()">Start Ciclo</button>
+          <button class="btn btn-sm btn-danger" onclick="m1_cmdStopCiclo()">Stop Ciclo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: proceso (inputs + lecturas) -->
+    <div class="m1-col">
+      <div class="machine-card">
+        <h4>Temperaturas</h4>
+        <div class="row">
+          <span>SP Sup</span>
+          <input id="m1-sp-sup" type="number" class="inp inp-sm">
+          <span>°C</span>
+          <button class="btn btn-sm btn-primary" onclick="m1_setSpSup()">Enviar</button>
+        </div>
+        <div class="row">
+          <span>SP Inf</span>
+          <input id="m1-sp-inf" type="number" class="inp inp-sm">
+          <span>°C</span>
+          <button class="btn btn-sm btn-primary" onclick="m1_setSpInf()">Enviar</button>
+        </div>
+        <div class="row">
+          <span>Temp SpSup</span>
+          <span id="m1-temp-spSup">0</span><span>°C</span>
+        </div>
+        <div class="row">
+          <span>Temp SpInf</span>
+          <span id="m1-temp-spInf">0</span><span>°C</span>
+        </div>
+        <div class="row">
+          <span>Real Sup</span>
+          <span id="m1-temp-sup-real">0</span><span>°C</span>
+        </div>
+        <div class="row">
+          <span>Real Inf</span>
+          <span id="m1-temp-inf-real">0</span><span>°C</span>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Producción</h4>
+        <div class="row">
+          <span>Golpes deseados</span>
+          <input id="m1-prod-objetivo" type="number" class="inp inp-sm">
+          <button class="btn btn-sm btn-primary" onclick="m1_setProdObjetivo()">Enviar</button>
+        </div>
+        <div class="row">
+          <span>Golpes reales</span>
+          <span id="m1-prod-actual">0</span>
+        </div>
+        <div class="row">
+          <span>Vasos/molde</span>
+          <input id="m1-nro-formas-set" type="number" class="inp inp-sm">
+          <button class="btn btn-sm btn-primary" onclick="m1_setNroFormas()">Enviar</button>
+        </div>
+        <div class="row">
+          <span>Vasos reales</span>
+          <span id="m1-nro-formas">0</span>
+        </div>
+        <div class="row">
+          <span>T último ciclo</span>
+          <span id="m1-tpo-ciclo">0</span><span>ms</span>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Energía / Info</h4>
+        <div class="row">
+          <span>P actual</span>
+          <span id="m1-consumo-actual">0</span><span>kW</span>
+        </div>
+        <div class="row">
+          <span>E día</span>
+          <span id="m1-consumo-medio">0</span><span>kWh</span>
+        </div>
+        <div class="row">
+          <span>Estado máquina</span>
+          <span id="m1-estado-mac">---</span>
+        </div>
+        <div class="row">
+          <span>Serial</span>
+          <span id="m1-serial">---</span>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- Nueva página M1-PRO (SINÓPTICO) -->
+  <div id="page-m1-pro" class="content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <h3 style="margin: 0;">M1 - VISTA SINÓPTICA (PRO)</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div id="m1-pro-status-led" class="status-led-large"></div>
+          <span id="m1-pro-status-text" style="font-size: 0.8em; text-transform: uppercase;">MODO</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; border-left: 1px solid #444; padding-left: 20px;">
+          <div id="m1-pro-ciclo-led-header" class="status-led-large" style="background-color: #222;"></div>
+          <span id="m1-pro-ciclo-text-header" style="font-size: 0.8em; color: #aaa; font-weight: bold; text-transform: uppercase;">CICLO</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="synoptic-wrapper" style="width: 100%; max-width: 1000px; margin: 0 auto;">
+      <div class="synoptic-container" style="position: relative; width: 100%; aspect-ratio: 16/9; background: url('img/Maquina3.jpg') no-repeat center center; background-size: contain; border: 1px solid #aaa; border-radius: 15px; background-color: #d1d1d1; box-shadow: 0 5px 25px rgba(0,0,0,0.2);">
+        
+        <!-- PANEL DE TEMPERATURAS (IZQUIERDA) -->
+        <div id="ov-m1-temps" style="position: absolute; top: 15%; left: 5%; display: flex; flex-direction: column; gap: 15px;">
+          <div class="synoptic-overlay" style="position: static;">
+            <span class="overlay-label">MOLDE SUPERIOR</span>
+            <span id="m1-pro-temp-sup" class="overlay-value">0</span><span class="overlay-unit">°C</span>
+          </div>
+          <div class="synoptic-overlay" style="position: static;">
+            <span class="overlay-label">MOLDE INFERIOR</span>
+            <span id="m1-pro-temp-inf" class="overlay-value">0</span><span class="overlay-unit">°C</span>
+          </div>
+        </div>
+
+        <!-- PANEL DE PRODUCCIÓN (DERECHA) -->
+        <div id="ov-m1-prod-panel" style="position: absolute; top: 15%; right: 5%; display: flex; flex-direction: column; gap: 15px;">
+          <div class="synoptic-overlay" style="position: static; border-color: #28a745;">
+            <span class="overlay-label" style="color: #28a745;">GOLPES TOTALES</span>
+            <span id="m1-pro-prod-actual" class="overlay-value">0</span>
+          </div>
+          <div class="synoptic-overlay" style="position: static; border-color: #ffc107;">
+            <span class="overlay-label" style="color: #ffc107;">TIEMPO CICLO</span>
+            <span id="m1-pro-tpo-ciclo" class="overlay-value">0</span><span class="overlay-unit">ms</span>
+          </div>
+        </div>
+
+        <!-- PLACA DE SERIE (SOBRE EL PANEL DE CONTROL) -->
+        <div id="ov-m1-serial" class="synoptic-overlay" style="top: 50%; right: 28%; padding: 4px 8px; border-color: #666; background: rgba(50,50,50,0.8);">
+          <span class="overlay-label" style="font-size: 0.6em; color: #999;">S/N:</span>
+          <span id="m1-pro-serial" style="font-size: 0.9em; font-weight: bold; color: #fff; font-family: monospace;">---</span>
+        </div>
+
+        <!-- ICONOS DE ESTADO DINÁMICOS (SOBRE LA MÁQUINA) -->
+        <!-- Resistencia -->
+        <div id="m1-pro-icon-res" style="position: absolute; top: 35%; left: 45%; transition: all 0.5s;">
+          <img src="img/resistor.jpg" style="width: 45px; height: 45px; border-radius: 5px; border: 2px solid #444; filter: grayscale(1);">
+          <div id="m1-pro-res-glow" style="position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: 0 0 20px #ff4444; border-radius: 5px; opacity: 0;"></div>
+        </div>
+
+        <!-- Motor -->
+        <div id="m1-pro-icon-motor" style="position: absolute; bottom: 15%; left: 45%;">
+          <img src="img/motor.png" style="width: 50px; height: 50px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">
+          <div id="m1-pro-motor-glow" style="position: absolute; top:0; left:0; width:100%; height:100%; box-shadow: 0 0 20px #00ff00; border-radius: 50%; opacity: 0;"></div>
+        </div>
+
+        <!-- CONTROLES INFERIORES (ICONOS) -->
+        <div class="synoptic-controls" style="position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 12px; border: 1px solid #333;">
+          <img src="img/service.jpg" onclick="m1_cmdModoManual()" style="width: 35px; height: 35px; cursor: pointer; border-radius: 5px;" title="Manual / Service">
+          <img src="img/run.jpg" onclick="m1_cmdStartCiclo()" style="width: 35px; height: 35px; cursor: pointer; border-radius: 5px;" title="Start Ciclo">
+          <img src="img/stop.jpg" onclick="m1_cmdStopCiclo()" style="width: 35px; height: 35px; cursor: pointer; border-radius: 5px;" title="Stop Ciclo">
+        </div>
+
+        <!-- ETIQUETA DE MODO -->
+        <div id="ov-m1-status-pro" class="synoptic-overlay" style="bottom: 5%; right: 5%; min-width: 120px; text-align: center;">
+          <span id="m1-pro-status-text" class="overlay-value" style="font-size: 1em; text-transform: uppercase;">MODO</span>
+        </div>
+
+      </div>
+    </div>
+  </div> <!-- Cierre de page-m1-pro -->
+  
+<!-- ///////////  LAYOUT 10 MAQ   ////////// -->
+
+<div id="page-layout-total" class="content">
+  <h3>LAYOUT MÁQUINAS</h3>
+
+  <div class="machines-grid">
+    <!-- Máquina 1 -->
+    <div class="machine-card-small" id="mcard-PLC1">
+      <div class="mcard-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="mcard-title">Máquina 1</span>
+        <div id="mcard-PLC1-status-led" class="status-led-large" style="width: 12px; height: 12px; margin-left: 5px;"></div>
+        <span class="badge badge-offline" id="mcard-PLC1-status">OFF</span>
+      </div>
+      <div class="mcard-row">
+        <span>Modo</span>
+        <span id="mcard-PLC1-modo">---</span>
+      </div>
+      <div class="mcard-row">
+        <span>Ciclo</span>
+        <span class="led led-off" id="mcard-PLC1-ciclo-led"></span>
+        <span id="mcard-PLC1-ciclo-txt">---</span>
+      </div>
+      <div class="mcard-row">
+        <span>Temp Sup</span>
+        <span id="mcard-PLC1-temp-sup">0</span><span>°C</span>
+      </div>
+      <div class="mcard-row">
+        <span>Prod</span>
+        <span id="mcard-PLC1-prod">0</span><span>golpes</span>
+      </div>
+    </div>
+
+    <!-- Máquina 2 -->
+    <div class="machine-card-small" id="mcard-PLC2">
+      <div class="mcard-header">
+        <span class="mcard-title">Máquina 2</span>
+        <span class="badge badge-offline" id="mcard-PLC2-status">OFF</span>
+      </div>
+      <div class="mcard-row">
+        <span>Modo</span>
+        <span id="mcard-PLC2-modo">---</span>
+      </div>
+      <div class="mcard-row">
+        <span>Ciclo</span>
+        <span class="led led-off" id="mcard-PLC2-ciclo-led"></span>
+        <span id="mcard-PLC2-ciclo-txt">---</span>
+      </div>
+      <div class="mcard-row">
+        <span>Temp Sup</span>
+        <span id="mcard-PLC2-temp-sup">0</span><span>°C</span>
+      </div>
+      <div class="mcard-row">
+        <span>Prod</span>
+        <span id="mcard-PLC2-prod">0</span><span>golpes</span>
+      </div>
+    </div>
+
+    <!-- Repite el bloque siguiendo el patrón para PLC3..PLC10 -->
+    <div class="machine-card-small" id="mcard-PLC3">...</div>
+    <div class="machine-card-small" id="mcard-PLC4">...</div>
+    <div class="machine-card-small" id="mcard-PLC5">...</div>
+    <div class="machine-card-small" id="mcard-PLC6">...</div>
+    <div class="machine-card-small" id="mcard-PLC7">...</div>
+    <div class="machine-card-small" id="mcard-PLC8">...</div>
+    <div class="machine-card-small" id="mcard-PLC9">...</div>
+    <div class="machine-card-small" id="mcard-PLC10">...</div>
+  </div>
+</div>
+
+<!-- Página de RECETAS (CRUD + PLC) -->
+<div id="page-recipes" class="content">
+  <h3>RECETAS</h3>
+  <p class="recipes-help">
+    <strong>Editar</strong> en la tabla = solo rellena el formulario de la derecha (no toca el PLC).
+    <strong>Enviar al PLC</strong> = igual que en REGISTROS: manda por Socket.IO las escrituras Modbus <strong>W62–W76</strong> (no esperamos ACK en el navegador; el servidor intenta escribir y loguea errores).
+    <strong>Nuevo</strong> (debajo del formulario) vacía el panel para crear otra receta; luego <strong>Guardar</strong>. <strong>Eliminar</strong> quita la receta seleccionada del JSON (tras pulsar <strong>Editar</strong> en una fila).
+    <strong>Guardar</strong> = guarda la receta en <code>data/recipes.json</code>. El polling del PLC (500&nbsp;ms) solo refresca lecturas; las escrituras van aparte.
+    La tabla inferior muestra <strong>lectura</strong> del PLC (parámetros que expone en marcha); puede tardar en igualarse hasta que tu programa copie zona escritura → lectura.
+  </p>
+
+  <div class="recipes-grid">
+    <div class="recipes-col">
+      <h4>Base de recetas (JSON)</h4>
+      <div class="recipes-toolbar">
+        <button class="btn btn-sm btn-secondary" id="recipes-btn-refresh">Refrescar</button>
+      </div>
+
+      <table class="tbl" id="recipes-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Actualizada</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="recipes-col">
+      <h4>Editar / Crear</h4>
+
+      <div class="recipe-form">
+        <div class="row">
+          <span>Nombre</span>
+          <input id="recipe-name" class="inp" type="text" style="flex:1;" />
+        </div>
+        <div class="row">
+          <span>Descripción</span>
+          <input id="recipe-desc" class="inp" type="text" style="flex:1;" />
+        </div>
+
+        <div id="recipe-fields"></div>
+
+        <div class="row recipe-form-actions" style="margin-top:8px;">
+          <button class="btn btn-sm btn-secondary" id="recipe-btn-new" type="button">Nuevo</button>
+          <button class="btn btn-sm btn-primary" id="recipe-btn-save" type="button">Guardar</button>
+          <button class="btn btn-sm btn-danger" id="recipe-btn-delete" type="button">Eliminar</button>
+          <button class="btn btn-sm btn-success" id="recipe-btn-load" type="button">Enviar al PLC1 (Modbus)</button>
+        </div>
+
+        <div id="recipe-msg" style="margin-top:8px;"></div>
+      </div>
+
+      <h4 style="margin-top:18px;">PLC1</h4>
+      <div class="machine-card">
+        <div class="row">
+          <span>Estado</span>
+          <span id="recipes-plc1-status">---</span>
+        </div>
+        <div class="row">
+          <span>Parámetros en ejecución (lectura PLC / tags)</span>
+        </div>
+        <table class="tbl" id="plc-active-table">
+          <thead>
+            <tr><th>Parámetro</th><th>Valor</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Página ALARMAS (detalle / ACK / histórico: pendiente) -->
+<div id="page-alarms" class="content">
+  <h3>ALARMAS Y AVISOS</h3>
+  <p>Las alarmas activas del PLC1 se muestran en la <strong>franja roja superior</strong> en todas las páginas (tags de lectura W52–W55 definidos en <code>config/tags_plc1.js</code>).</p>
+  <div class="machine-card" style="margin:12px 0;">
+    <h4>Comando PLC (escritura)</h4>
+    <p style="margin:4px 0 8px 0; font-size:12px; color:#aaa;">Tag <code>CMD_RESET_ANOMALIE</code>: palabra <strong>W61</strong>, bit <strong>1</strong> — igual que en paralelo con tu pulsador físico en TIA.</p>
+    <button type="button" class="btn btn-sm btn-primary" onclick="m1_cmdResetAnomalie()">Reset anomalías (W61 bit 1)</button>
+  </div>
+  
+  <div class="machine-card" style="margin:12px 0;">
+    <h4>Historial de Alarmas</h4>
+    <div style="margin-bottom: 12px;">
+      <button type="button" class="btn btn-sm btn-secondary" onclick="alarms_refreshHistory()">Refrescar Historial</button>
+      <span id="alarms-history-msg" style="margin-left: 10px; font-size: 12px; color: #888;"></span>
+    </div>
+    <div style="max-height: 400px; overflow-y: auto;">
+      <table class="tbl" id="alarms-history-table">
+        <thead>
+          <tr>
+            <th>Fecha y Hora</th>
+            <th>Tag</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4" style="text-align:center;">Cargando historial...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <p><a href="doc/recetas-scada.html" target="_blank" rel="noopener">Abrir documentación del proyecto (imprimir o “Guardar como PDF” desde el navegador)</a></p>
+</div>
+
+</div>
+
+  <!-- Cargo los JS de Utilidad -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/alarm-banner.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/regs.js"></script>
+  <script src="js/m1.js"></script>
+  <script src="js/recipes.js"></script>
+  <script src="js/alarms.js"></script>
+  
+</body>
+</html>

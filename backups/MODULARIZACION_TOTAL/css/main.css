@@ -1,0 +1,422 @@
+/* main.css - versión 0, estilos simples */
+
+/* Variables básicas de color */
+:root {
+  --neon-green: #0f0;
+  --dark-bg: #000;
+  --panel-bg: #050505;
+}
+
+/* Body y layout principal */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  background: var(--dark-bg);
+  color: var(--neon-green);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Franja global de alarmas (tipo SCADA) */
+.alarm-banner {
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  background: #b71c1c;
+  border-bottom: 2px solid #ff5252;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.alarm-banner__line1 {
+  color: #ffffff;
+}
+
+.alarm-banner__line2 {
+  margin-top: 4px;
+  color: #fff9c4;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.alarm-banner--offline .alarm-banner__line2 {
+  color: #fffde7;
+}
+
+.alarm-banner--offline {
+  background: #8b0000;
+}
+
+.alarm-banner--hidden {
+  display: none;
+}
+
+/* Cabecera superior */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 2px solid var(--neon-green);
+  background: var(--panel-bg);
+  box-shadow: 0 0 15px var(--neon-green);
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--neon-green);
+}
+
+/* Contenedor principal: sidebar + contenido */
+.wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Barra lateral */
+.sidebar {
+  width: 220px;
+  border-right: 2px solid var(--neon-green);
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+}
+
+.menu-link {
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #111;
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--neon-green);
+}
+
+.menu-link.active {
+  background: var(--neon-green);
+  color: #000;
+}
+
+/* Zona de contenido */
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: none;
+}
+
+.content.active {
+  display: block;
+}
+
+/* Estado PLC demo */
+#status.offline {
+  border: 1px solid #f00;
+  color: #f00;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+#status.online {
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+/* REGISTROS: layout columnas */
+.main-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.column {
+  flex: 1;
+  border: 1px solid #333;
+  padding: 15px;
+  background: #050505;
+}
+
+/* Fila de registro */
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  height: 48px;
+  border-bottom: 1px solid #222;
+  box-sizing: border-box;
+}
+
+.item b {
+  font-size: 16px;
+  color: #fff;
+}
+
+.item input[type="number"] {
+  background: #000;
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+  width: 80px;
+  padding: 4px;
+  text-align: center;
+}
+
+.item button {
+  background: #008800;
+  color: #fff;
+  border: 1px solid var(--neon-green);
+  padding: 4px 10px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.item button:active {
+  transform: scale(0.95);
+  background: var(--neon-green);
+  color: #000;
+}
+
+/* Estado PLC M1 */
+.machine-status {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#m1-plc-status {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+#m1-plc-status.status-online {
+  background: #004400;
+  color: #0f0;
+}
+
+#m1-plc-status.status-offline {
+  background: #440000;
+  color: #f66;
+}
+
+/* Layout MÁQUINA 1 en dos columnas */
+.m1-layout {
+  display: flex;
+  gap: 16px;
+}
+
+.m1-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Tarjetas compactas M1 */
+.machine-card {
+  border: 1px solid #333;
+  padding: 8px;
+  margin-bottom: 0;
+  background: #050505;
+  font-size: 12px;
+}
+
+.machine-card h4 {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+}
+
+/* Filas dentro de las tarjetas */
+.machine-card .row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.machine-card .row span:first-child {
+  flex: 1;
+}
+
+/* LEDs pequeños – OFF rojo vivo */
+.led {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #444;
+  background: #b00000;   /* rojo apagado más vivo */
+}
+
+.led.on,
+.led-on {
+  background: #0f0;      /* verde encendido */
+}
+
+/* Botones */
+.btn {
+  background: #008800;
+  color: #fff;
+  border: 1px solid var(--neon-green);
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-sm {
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.btn-success {
+  background: #008800;
+}
+
+.btn-danger {
+  background: #880000;
+}
+
+.btn-primary {
+  background: #004488;
+}
+
+.btn-secondary {
+  background: #444444;
+}
+
+.btn:active {
+  transform: scale(0.96);
+  background: var(--neon-green);
+  color: #000;
+}
+
+/* Línea recetas M1 */
+.m1-recetas {
+  margin-bottom: 10px;
+}
+
+/* Inputs pequeños homogéneos */
+.inp {
+  background: #000;
+  border: 1px solid var(--neon-green);
+  color: var(--neon-green);
+  border-radius: 2px;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.inp-sm {
+  width: 70px;
+}
+
+/* Grid para LAYOUT (muchas máquinas) */
+.machines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+/* Tarjeta compacta de máquina (LAYOUT) */
+.machine-card-small {
+  background: #050505;
+  border: 1px solid var(--neon-green);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Cabecera de la tarjeta */
+.mcard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.mcard-title {
+  font-weight: bold;
+}
+
+/* Filas dentro de la tarjeta */
+.mcard-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+/* =========================
+   RECETAS
+   ========================= */
+.recipes-grid {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.recipes-col {
+  flex: 1;
+  min-width: 380px;
+}
+
+.recipes-toolbar {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 10px 0;
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  background: #050505;
+  border: 1px solid #222;
+  font-size: 12px;
+}
+
+.tbl th,
+.tbl td {
+  border-bottom: 1px solid #222;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tbl th {
+  color: #000;
+  background: var(--neon-green);
+}
+
+.tbl tr.row-active td {
+  outline: 1px solid var(--neon-green);
+  background: #001a00;
+}
+
+.recipe-form .row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.recipe-form-actions {
+  flex-wrap: wrap;
+}
+
+.recipes-help {
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.45;
+  max-width: 1100px;
+  margin: 0 0 14px 0;
+}
+
+.recipes-help code {
+  color: var(--neon-green);
+}

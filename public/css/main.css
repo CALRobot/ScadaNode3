@@ -1,0 +1,297 @@
+/* public/css/main.css - Tema Morado Moderno (Shell) */
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-panel: rgba(25, 25, 35, 0.7);
+  --border-color: #333;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+
+  /* Paleta Morada SCADA Moderno */
+  --purple-main: #7c3aed;
+  --purple-dark: #4c1d95;
+  --purple-light: #a78bfa;
+  --purple-hover: #6d28d9;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  height: 65px;
+  background: #111118;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  border-bottom: 1px solid var(--purple-dark);
+  box-shadow: 0 4px 20px rgba(76, 29, 149, 0.2);
+  z-index: 100;
+}
+
+.app-title {
+  font-size: 1.4em;
+  letter-spacing: 2px;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--purple-light), #fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Global Status & Clock */
+.header-info {
+  display: flex;
+  align-items: center;
+  /* Esto los mantiene alineados en la misma línea */
+  gap: 25px;
+  /* Un poco más de espacio entre reloj y status */
+  font-family: monospace;
+}
+
+#reloj {
+  color: var(--purple-light);
+  /* Cambiamos el gris por el lila del logo para que resalte */
+  font-size: 1.25em;
+  /* ¡Más grande! Ajusta a 1.4em si lo quieres gigante */
+  font-weight: bold;
+  /* Negrita */
+  text-shadow: 0 0 5px rgba(124, 58, 237, 0.3);
+  /* Un ligero brillo sutil */
+}
+
+
+
+#status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.85em;
+  letter-spacing: 1px;
+}
+
+/* Esto es lo que hace que 'status' Y DEMAS cambie de color */
+.online {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.offline {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Main Wrapper */
+.wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #13131c;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 25px 0;
+}
+
+.menu-link {
+  padding: 14px 30px;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9em;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-link:hover {
+  background: rgba(124, 58, 237, 0.1);
+  color: #fff;
+}
+
+.menu-link.active {
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.15) 0%, transparent 100%);
+  color: var(--purple-light);
+  border-left-color: var(--purple-main);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 20px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* Content Area */
+#main-content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+  box-sizing: border-box;
+  position: relative;
+  background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.08), transparent 60%);
+}
+
+.machine-card {
+  background: rgba(25, 25, 35, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.machine-card:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.machine-card h4 {
+  margin: 0 0 15px 0;
+  color: var(--purple-light);
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding-bottom: 8px;
+}
+
+.machine-card .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.machine-card .row:last-child {
+  margin-bottom: 0;
+}
+
+/* Global Buttons & Inputs */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85em;
+  transition: all 0.2s;
+  color: #fff;
+}
+
+.btn-primary {
+  background: var(--purple-main);
+}
+
+.btn-primary:hover {
+  background: var(--purple-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #2a2a35;
+  border: 1px solid #444;
+}
+
+.btn-secondary:hover {
+  background: #3a3a45;
+}
+
+/* Botones Críticos (Stop/Reset) - Morado Oscuro */
+.btn-danger, .btn-stop, .btn-reset {
+  background: var(--purple-dark);
+  color: #fff;
+  border: 1px solid var(--purple-main);
+}
+
+.btn-danger:hover, .btn-stop:hover, .btn-reset:hover {
+  background: #3b0764;
+  transform: translateY(-1px);
+}
+
+/* Leds Globales */
+.led {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #222;
+  border: 1px solid #444;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.led.on {
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  border-color: #fff;
+}
+
+/* Estilos para indicadores del Header */
+.header-led-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.led-header {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #222;
+  border: 1px solid #444;
+}
+
+.header-led-txt {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.inp {
+  background: #1a1a24;
+  border: 1px solid var(--border-color);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  outline: none;
+  font-family: monospace;
+}
+
+.inp:focus {
+  border-color: var(--purple-main);
+}
+
+/* Alarm Banner Override */
+.alarm-banner {
+  background: #ef4444;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  z-index: 200;
+}
+
+.alarm-banner--hidden {
+  display: none;
+}

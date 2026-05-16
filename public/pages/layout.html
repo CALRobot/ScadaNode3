@@ -1,0 +1,141 @@
+<div class="layout-container">
+  <!-- Barra de Comandos Globales -->
+  <div class="global-commands">
+    <div class="global-info">
+      <h3>LAYOUT DE PLANTA</h3>
+      <p id="layout-total-machines">Monitorizando 1 PLC(s)</p>
+    </div>
+    <div class="global-actions">
+      <button class="btn btn-primary" onclick="layout_globalCmd('pompa', 1)">START BOMBAS</button>
+      <button class="btn btn-stop" onclick="layout_globalCmd('pompa', 0)">STOP BOMBAS</button>
+      <button class="btn btn-primary" onclick="layout_globalCmd('res', 1)">START RESIST.</button>
+      <button class="btn btn-stop" onclick="layout_globalCmd('res', 0)">STOP RESIST.</button>
+      <button class="btn btn-secondary" onclick="layout_globalCmd('modo', 0)">TODOS MANUAL</button>
+      <button class="btn btn-primary" onclick="layout_globalCmd('modo', 1)">TODOS AUTO</button>
+      <button class="btn btn-primary" onclick="layout_globalCmd('start_all', 1)">START TOTAL</button>
+      <button class="btn btn-stop btn-emergency" onclick="layout_globalCmd('stop_all', 1)">STOP TOTAL</button>
+    </div>
+  </div>
+
+  <div class="machines-grid" id="layout-grid">
+    <!-- Las tarjetas se generan o actualizan dinámicamente -->
+    
+    <!-- Ejemplo Estructural para PLC1 -->
+    <div class="machine-card-premium" id="mcard-PLC1">
+      <div class="mcard-header">
+        <div class="mcard-title-group">
+          <div id="mcard-PLC1-status-led" class="led-status gray"></div>
+          <h4>MÁQUINA 1</h4>
+        </div>
+        <span class="badge" id="mcard-PLC1-status-txt">OFFLINE</span>
+      </div>
+
+      <div class="mcard-stats">
+        <div class="stat-item">
+          <span class="stat-label">TEMP SUP</span>
+          <span class="stat-val" id="mcard-PLC1-temp">0<small>°C</small></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">PROD</span>
+          <span class="stat-val" id="mcard-PLC1-prod">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">CICLO</span>
+          <span class="stat-val" id="mcard-PLC1-time">0<small>ms</small></span>
+        </div>
+      </div>
+
+      <div class="mcard-actions">
+        <!-- Grupo Modo -->
+        <div class="action-group">
+          <div class="action-header">
+            <div id="mcard-PLC1-led-modo" class="led-small"></div>
+            <span>MODO</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-xs btn-secondary" onclick="layout_cmd('PLC1', 'modo', 0)">MAN</button>
+            <button class="btn btn-xs btn-primary" onclick="layout_cmd('PLC1', 'modo', 1)">AUTO</button>
+          </div>
+        </div>
+
+        <!-- Grupo Bomba -->
+        <div class="action-group">
+          <div class="action-header">
+            <div id="mcard-PLC1-led-pompa" class="led-small"></div>
+            <span>BOMBA</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-xs btn-primary" onclick="layout_cmd('PLC1', 'pompa', 1)">ON</button>
+            <button class="btn btn-xs btn-stop" onclick="layout_cmd('PLC1', 'pompa', 0)">OFF</button>
+          </div>
+        </div>
+
+        <!-- Grupo Resistencias -->
+        <div class="action-group">
+          <div class="action-header">
+            <div id="mcard-PLC1-led-res" class="led-small"></div>
+            <span>RESIST.</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-xs btn-primary" onclick="layout_cmd('PLC1', 'res', 1)">ON</button>
+            <button class="btn btn-xs btn-stop" onclick="layout_cmd('PLC1', 'res', 0)">OFF</button>
+          </div>
+        </div>
+
+        <!-- Grupo Ciclo -->
+        <div class="action-group">
+          <div class="action-header">
+            <div id="mcard-PLC1-led-ciclo" class="led-small"></div>
+            <span>CICLO</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-xs btn-primary" onclick="layout_cmd('PLC1', 'ciclo', 1)">START</button>
+            <button class="btn btn-xs btn-stop" onclick="layout_cmd('PLC1', 'ciclo', 0)">STOP</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mcard-footer">
+        <button class="btn btn-block btn-outline" onclick="showPage('m1')">DETALLES MÁQUINA</button>
+      </div>
+    </div>
+    
+    <!-- Máquina 2 (Inactiva) -->
+    <div class="machine-card-premium inactive" id="mcard-PLC2">
+      <div class="mcard-header">
+        <div class="mcard-title-group">
+          <div class="led-status gray"></div>
+          <h4>MÁQUINA 2</h4>
+        </div>
+        <span class="badge">DESHABILITADA</span>
+      </div>
+      <div class="mcard-stats" style="opacity: 0.3;">
+        <div class="stat-item"><span class="stat-label">TEMP</span><span class="stat-val">--</span></div>
+        <div class="stat-item"><span class="stat-label">PROD</span><span class="stat-val">--</span></div>
+        <div class="stat-item"><span class="stat-label">CICLO</span><span class="stat-val">--</span></div>
+      </div>
+      <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8em; border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px;">
+        SIN CONEXIÓN CONFIGURADA
+      </div>
+    </div>
+
+    <!-- Máquina 3 (Inactiva) -->
+    <div class="machine-card-premium inactive" id="mcard-PLC3">
+      <div class="mcard-header">
+        <div class="mcard-title-group">
+          <div class="led-status gray"></div>
+          <h4>MÁQUINA 3</h4>
+        </div>
+        <span class="badge">DESHABILITADA</span>
+      </div>
+      <div class="mcard-stats" style="opacity: 0.3;">
+        <div class="stat-item"><span class="stat-label">TEMP</span><span class="stat-val">--</span></div>
+        <div class="stat-item"><span class="stat-label">PROD</span><span class="stat-val">--</span></div>
+        <div class="stat-item"><span class="stat-label">CICLO</span><span class="stat-val">--</span></div>
+      </div>
+      <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.8em; border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px;">
+        PROYECTO FUTURO
+      </div>
+    </div>
+  </div>
+</div>

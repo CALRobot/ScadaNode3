@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>SCADA Node3 — Guía rápida (Recetas, alarmas, Modbus)</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 720px; margin: 24px auto; padding: 0 16px; line-height: 1.45; color: #111; }
+    h1 { font-size: 22px; border-bottom: 2px solid #333; padding-bottom: 8px; }
+    h2 { font-size: 17px; margin-top: 28px; }
+    code, pre { font-family: Consolas, monospace; font-size: 12px; background: #f4f4f4; padding: 2px 6px; }
+    pre { padding: 12px; overflow-x: auto; }
+    ul { padding-left: 22px; }
+    .muted { color: #444; font-size: 13px; }
+    @media print {
+      body { margin: 0; font-size: 11pt; }
+      a { color: #000; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>SCADA Node3 — Guía rápida</h1>
+<p class="muted">Para generar PDF: en el navegador use <strong>Imprimir</strong> y elija <strong>Guardar como PDF</strong>.</p>
+
+<h2>1. ¿Debo preocuparme por cómo está hecho <code>recipes.js</code>?</h2>
+<p>No si solo operas la pantalla: basta con saber qué hace cada botón.</p>
+<ul>
+  <li><strong>Editar</strong>: copia la receta al formulario (solo visual).</li>
+  <li><strong>Guardar</strong>: escribe en <code>data/recipes.json</code> en el PC.</li>
+  <li><strong>Enviar al PLC</strong>: envía valores por Socket.IO al servidor Node; el servidor intenta escribir en Modbus los registros <strong>W62–W76</strong> (mapa definido en los tags).</li>
+</ul>
+<p>Si vas a mantener el código, <code>recipes.js</code> solo agrupa: lista de campos (clave SCADA + dirección Modbus), llamadas <code>fetch('/api/recipes')</code> para el CRUD, y <code>socket.emit('escribir', …)</code> igual que la página de registros.</p>
+
+<h2>2. JSON frente a memorias del PLC</h2>
+<ul>
+  <li><code>recipes.json</code>: archivo local del ordenador donde corre Node — catálogo de recetas.</li>
+  <li><strong>PLC</strong>: recibe comandos por Modbus TCP. Lo que “ve” la máquina son registros que hayáis mapeado en TIA Portal.</li>
+</ul>
+
+<h2>3. Franja roja de alarmas</h2>
+<p>Lee los tags de alarma del PLC1 (palabras W52–W55, bits definidos en <code>config/tags_plc1.js</code>). Si hay comunicación pero ningún bit activo, la franja se oculta. Si no hay comunicación Modbus, se muestra un aviso de <strong>PLC sin comunicación</strong>.</p>
+<p>Los textos en español están en <code>public/js/alarm-banner.js</code> (<code>ALARM_TEXT</code>). Puede ampliar o cambiar mensajes ahí.</p>
+
+<h2>4. Próximos pasos típicos de un SCADA “serio”</h2>
+<ul>
+  <li><strong>Página Alarmas</strong>: tabla de todas las alarmas + estado reconocido (ACK) y pulsante reset si el PLC lo permite.</li>
+  <li><strong>Histórico</strong>: cada vez que una alarma pasa de inactiva→activa (y opcionalmente al borrar), añadir una línea a un archivo JSON o CSV en el servidor con <code>ISO8601</code> fecha/hora, código de alarma y texto.</li>
+  <li>El PLC debe ofrecer bits “para acknowledgment” o un modelo equivalente si necesitas ACK persistente entre sesiones.</li>
+</ul>
+
+<h2>5. Arranque</h2>
+<pre>cd ruta\ScadaNode3
+node server.js</pre>
+<p>Navegador: <code>http://localhost:4000</code></p>
+
+<p class="muted">Documento generado como ayuda del proyecto ScadaNode3.</p>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+    <div id="page-alarms" class="content">
+      <h3>ALARMAS Y AVISOS</h3>
+      <p>Las alarmas activas del PLC1 se muestran en la <strong>franja roja superior</strong> en todas las páginas (tags
+        de lectura W52–W55 definidos en <code>config/tags_plc1.js</code>).</p>
+      <div class="machine-card" style="margin:12px 0;">
+        <h4>Comando PLC (escritura)</h4>
+        <p style="margin:4px 0 8px 0; font-size:12px; color:#aaa;">Tag <code>CMD_RESET_ANOMALIE</code>: palabra
+          <strong>W61</strong>, bit <strong>1</strong> — igual que en paralelo con tu pulsador físico en TIA.</p>
+        <button type="button" class="btn btn-sm btn-primary" onclick="m1_cmdResetAnomalie()">Reset anomalías (W61 bit
+          1)</button>
+      </div>
+
+      <div class="machine-card" style="margin:12px 0;">
+        <h4>Historial de Alarmas</h4>
+        <div style="margin-bottom: 12px;">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="alarms_refreshHistory()">Refrescar
+            Historial</button>
+          <span id="alarms-history-msg" style="margin-left: 10px; font-size: 12px; color: #888;"></span>
+        </div>
+        <div style="max-height: 400px; overflow-y: auto;">
+          <table class="tbl" id="alarms-history-table">
+            <thead>
+              <tr>
+                <th>Fecha y Hora</th>
+                <th>PLC</th>
+                <th>Tag</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="text-align:center;">Cargando historial...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+        <a href="doc/recetas-scada.html" target="_blank" rel="noopener" style="color: var(--purple-light); font-size: 0.9em; text-decoration: none; font-weight: 500;">
+          📘 Abrir documentación del proyecto (Imprimir o guardar como PDF)
+        </a>
+      </div>
+    </div>
