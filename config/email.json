@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "service": null,
+  "host": "smtp.ethereal.email",
+  "port": 587,
+  "auth": {
+    "user": "chet.kautzer@ethereal.email",
+    "pass": "CSyg5K9HftP48K6fwq"
+  },
+  "notifications": {
+    "to": "laracarlosa@gmail.com",
+    "subject": "⚠️ ALERTA SCADA",
+    "onAlarm": true,
+    "onRecovery": true,
+    "maxInactivityMin": 1
+  }
+}
