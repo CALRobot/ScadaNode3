@@ -92,6 +92,41 @@ body {
   border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+/* Botón Logout */
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 8px;
+  color: var(--purple-light);
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.btn-logout:hover {
+  background: rgba(124, 58, 237, 0.2);
+  border-color: rgba(124, 58, 237, 0.5);
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+}
+
+.btn-logout:active {
+  transform: scale(0.98);
+}
+
+.btn-logout svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-logout:hover svg {
+  transform: translateX(3px);
+}
+
 /* Main Wrapper */
 .wrapper {
   display: flex;

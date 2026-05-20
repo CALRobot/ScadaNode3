@@ -4,8 +4,8 @@
   "host": "smtp.ethereal.email",
   "port": 587,
   "auth": {
-    "user": "chet.kautzer@ethereal.email",
-    "pass": "CSyg5K9HftP48K6fwq"
+    "user": "lorenza.stehr56@ethereal.email",
+    "pass": "DkFUuDK4uap1zWrXCn"
   },
   "notifications": {
     "to": "laracarlosa@gmail.com",

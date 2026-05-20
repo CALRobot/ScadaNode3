@@ -6,6 +6,7 @@ const net = require('net');
 const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const session = require('express-session');
 
 const app = express();
 const server = http.createServer(app);
@@ -14,6 +15,20 @@ const io = new Server(server);
 // --- CONFIGURACIÓN ---
 const plcsConfig = JSON.parse(fs.readFileSync('./config/plcs.json', 'utf8'));
 const { tags: tagsPlc1 } = require('./config/tags_plc1');
+
+// Cargar usuarios
+let usersConfig = { users: [] };
+try {
+  usersConfig = JSON.parse(fs.readFileSync('./config/users.json', 'utf8'));
+} catch (e) { console.log('[AUTH] No se encontró config/users.json'); }
+
+// Configurar sesiones
+app.use(session({
+  secret: 'scada-secret-key-2026',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 horas
+}));
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -326,6 +341,45 @@ function createPlcController(device, tagsDef) {
 
 plcsConfig.devices.forEach(dev => {
   if (dev.id === 'PLC1') plcControllers[dev.id] = createPlcController(dev, tagsPlc1);
+});
+
+// --- AUTH API ---
+
+// Middleware para verificar autenticación
+const requireAuth = (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ error: 'No autenticado' });
+  }
+};
+
+// Login
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  const user = usersConfig.users.find(u => u.username === username && u.password === password);
+  
+  if (user) {
+    req.session.user = { username: user.username, role: user.role };
+    res.json({ success: true, user: { username: user.username, role: user.role } });
+  } else {
+    res.status(401).json({ success: false, error: 'Credenciales inválidas' });
+  }
+});
+
+// Logout
+app.post('/api/logout', (req, res) => {
+  req.session.destroy();
+  res.json({ success: true });
+});
+
+// Verificar sesión actual
+app.get('/api/me', (req, res) => {
+  if (req.session.user) {
+    res.json({ authenticated: true, user: req.session.user });
+  } else {
+    res.json({ authenticated: false });
+  }
 });
 
 // --- APIs ---
