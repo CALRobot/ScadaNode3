@@ -1,0 +1,151 @@
+<div id="page-m1" class="page-container content">
+  <div class="m1-header">
+    <div class="m1-header-left">
+      <h2 class="m1-title">MÁQUINA 1 - PLC1</h2>
+      <div class="m1-header-pills">
+        <div class="pill">
+          <div id="m1-led-ciclo" class="led"></div>
+          <span id="m1-txt-ciclo">CICLO ---</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="m1-premium-layout">
+    <!-- Columna Izquierda: Mandos -->
+    <div class="m1-sidebar-col">
+      <div class="machine-card">
+        <div class="card-header-with-led">
+          <h4>Modo Trabajo</h4>
+          <div id="m1-led-auto" class="led"></div>
+        </div>
+        <div class="row" style="margin-top:-10px; margin-bottom:15px;">
+          <b id="m1-txt-auto" style="font-size:0.8em; color:var(--text-muted);">MODO ---</b>
+        </div>
+        <div class="btn-group-vertical">
+          <button class="btn btn-secondary" onclick="m1_cmdModo(0)">MANUAL</button>
+          <button class="btn btn-primary" onclick="m1_cmdModo(1)">AUTOMÁTICO</button>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <div class="card-header-with-led">
+          <h4>Ciclo Automático</h4>
+          <div id="m1-led-ciclo-card" class="led"></div>
+        </div>
+        <div class="btn-group-vertical">
+          <button class="btn btn-primary btn-large-sm" onclick="m1_cmdCiclo(1)">START CICLO</button>
+          <button class="btn btn-stop btn-large-sm" onclick="m1_cmdCiclo(0)">STOP CICLO</button>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Hidráulica</h4>
+        <div class="row">
+          <span>Central Oleo</span>
+          <div id="m1-led-hidra" class="led"></div>
+        </div>
+        <div class="btn-group-vertical">
+          <button class="btn btn-primary" onclick="m1_cmdHidra(1)">START</button>
+          <button class="btn btn-stop" onclick="m1_cmdHidra(0)">STOP</button>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Resistencias</h4>
+        <div class="row">
+          <span>Calefacción</span>
+          <div id="m1-led-res" class="led"></div>
+        </div>
+        <div class="btn-group-vertical">
+          <button class="btn btn-primary" onclick="m1_cmdRes(1)">START</button>
+          <button class="btn btn-stop" onclick="m1_cmdRes(0)">STOP</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Centro: Vista Sinóptica (Imagen con Overlays) -->
+    <div class="m1-main-view">
+      <div class="synoptic-container">
+        <img src="img/Maquina3.jpg" alt="Máquina 1" class="machine-img">
+        
+        <!-- Overlays de Datos en Tiempo Real -->
+        <div class="overlay temp-sup" title="Temp. Molde Superior">
+          <span class="label">SUP</span>
+          <span id="m1-val-real-sup" class="value">0</span><span class="unit">°C</span>
+        </div>
+        <div class="overlay temp-inf" title="Temp. Molde Inferior">
+          <span class="label">INF</span>
+          <span id="m1-val-real-inf" class="value">0</span><span class="unit">°C</span>
+        </div>
+        <div class="overlay production" title="Producción Actual">
+          <span class="label">PROD</span>
+          <span id="m1-val-prod-real" class="value">0</span>
+        </div>
+        <div class="overlay cycle-time" title="Último Ciclo">
+          <span class="label">CICLO</span>
+          <span id="m1-val-ciclo-time" class="value">0</span><span class="unit">ms</span>
+        </div>
+
+        <!-- Indicadores Flotantes -->
+        <div id="m1-float-res" class="float-icon" title="Estado Resistencias">
+          <img src="img/resistor.jpg" id="m1-img-res" class="icon-img gray">
+        </div>
+        <div id="m1-float-motor" class="float-icon" title="Estado Motor">
+          <img src="img/motor.png" id="m1-img-motor" class="icon-img gray">
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Parámetros -->
+    <div class="m1-sidebar-col">
+      <div class="machine-card">
+        <h4>Setpoints Temp</h4>
+        <div class="row">
+          <span>SP Sup</span>
+          <div class="val-group">
+            <input id="m1-in-sp-sup" class="inp inp-sm" type="number" style="width:50px;">
+            <button class="btn-icon" onclick="m1_cmdSetSpSup()">✔</button>
+          </div>
+        </div>
+        <div class="row">
+          <span>SP Inf</span>
+          <div class="val-group">
+            <input id="m1-in-sp-inf" class="inp inp-sm" type="number" style="width:50px;">
+            <button class="btn-icon" onclick="m1_cmdSetSpInf()">✔</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Producción Set</h4>
+        <div class="row">
+          <span>Golpes SP</span>
+          <div class="val-group">
+            <input id="m1-in-prod-sp" class="inp inp-sm" type="number" style="width:60px;">
+            <button class="btn-icon" onclick="m1_cmdSetProdSp()">✔</button>
+          </div>
+        </div>
+        <div class="row">
+          <span>Vasos/Molde</span>
+          <div class="val-group">
+            <input id="m1-in-formas" class="inp inp-sm" type="number" style="width:60px;">
+            <button class="btn-icon" onclick="m1_cmdSetFormas()">✔</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="machine-card">
+        <h4>Información</h4>
+        <div class="row">
+          <span>Estado PLC</span>
+          <b id="m1-val-estado" style="font-size: 0.8em; color: var(--purple-light);">---</b>
+        </div>
+        <div class="row">
+          <span>S/N Engi</span>
+          <b id="m1-val-serial" style="font-size: 0.7em; color: var(--text-muted);">---</b>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

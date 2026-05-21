@@ -205,6 +205,7 @@
       <li><a href="#arquitectura">14. Arquitectura de Intercambio (DB1)</a></li>
       <li><a href="#indicadores">15. Indicadores Visuales y Sinóptico PRO</a></li>
       <li><a href="#operacion-rapida" style="color: #10b981; font-weight: 600;">16. Guía de Operación Rápida</a></li>
+      <li><a href="#autenticacion" style="color: #f59e0b; font-weight: 600;">17. Sistema de Autenticación</a></li>
     </ul>
 
     <!-- LOGO DE EMPRESA AL PIE -->
@@ -773,6 +774,108 @@ fs.appendFileSync('./data/production.jsonl', JSON.stringify(logEntry) + '\n');</
           <ul>
             <li><strong>Arranque manual:</strong> Si el sistema no arranca solo, abre una terminal en <code>C:\ScadaNode3</code> y ejecuta <code>node server.js</code>.</li>
             <li><strong>Acceso remoto:</strong> Se puede acceder desde cualquier PC de la red introduciendo la IP del servidor y el puerto 4000 (ej: <code>http://192.168.0.100:4000</code>).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 17: SISTEMA DE AUTENTICACIÓN -->
+      <section id="autenticacion">
+        <h3 style="color: #f59e0b;">17. Sistema de Autenticación</h3>
+        <p>El SCADA implementa un sistema de autenticación basado en sesiones para proteger el acceso a la interfaz de control. Este sistema garantiza que solo usuarios autorizados puedan operar la máquina y enviar comandos al PLC.</p>
+
+        <h4>17.1 Configuración de Usuarios</h4>
+        <p>Los usuarios se definen en el archivo <code>config/users.json</code>. Cada usuario tiene tres propiedades:</p>
+        <pre><code>{
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin123",
+      "role": "admin"
+    },
+    {
+      "username": "operador",
+      "password": "oper123",
+      "role": "operador"
+    }
+  ]
+}</code></pre>
+
+        <div class="alert" style="background: rgba(245, 158, 11, 0.05); border-color: #f59e0b;">
+          <strong>⚠️ Seguridad:</strong>
+          <ul>
+            <li>Las contraseñas se almacenan en texto plano. Para producción, considera implementar hashing (bcrypt).</li>
+            <li>El archivo <code>users.json</code> debe protegerse con permisos de archivo restrictivos en el servidor.</li>
+          </ul>
+        </div>
+
+        <h4>17.2 Flujo de Autenticación</h4>
+        <p>El proceso de login sigue estos pasos:</p>
+        <ol>
+          <li><strong>Pantalla de Login:</strong> El usuario accede a <code>/login.html</code> e introduce sus credenciales.</li>
+          <li><strong>Envío al Servidor:</strong> El formulario envía una petición <code>POST /api/login</code> con usuario y contraseña.</li>
+          <li><strong>Verificación:</strong> El servidor busca el usuario en <code>config/users.json</code> y valida las credenciales.</li>
+          <li><strong>Creación de Sesión:</strong> Si las credenciales son correctas, se crea una sesión con <code>express-session</code> y se almacena el usuario en <code>req.session.user</code>.</li>
+          <li><strong>Redirección:</strong> El navegador redirige a <code>/index.html</code> (panel principal).</li>
+        </ol>
+
+        <pre><code><span class="cmt">// server.js: Endpoint de login</span>
+app.<span class="fn">post</span>(<span class="str">'/api/login'</span>, (req, res) => {
+  <span class="kw">const</span> { username, password } = req.body;
+  <span class="kw">const</span> user = usersConfig.users.<span class="fn">find</span>(u => u.username === username && u.password === password);
+  
+  <span class="kw">if</span> (user) {
+    req.session.user = { username: user.username, role: user.role };
+    res.<span class="fn">json</span>({ success: <span class="kw">true</span>, user: { username: user.username, role: user.role } });
+  } <span class="kw">else</span> {
+    res.<span class="fn">status</span>(401).<span class="fn">json</span>({ success: <span class="kw">false</span>, error: <span class="str">'Credenciales inválidas'</span> });
+  }
+});</code></pre>
+
+        <h4>17.3 Middleware de Protección</h4>
+        <p>El servidor incluye un middleware <code>requireAuth</code> que protege las rutas sensibles. Este middleware verifica que exista una sesión activa antes de permitir el acceso:</p>
+        <pre><code><span class="cmt">// server.js: Middleware de autenticación</span>
+<span class="kw">const</span> <span class="fn">requireAuth</span> = (req, res, next) => {
+  <span class="kw">if</span> (req.session.user) {
+    <span class="fn">next</span>();
+  } <span class="kw">else</span> {
+    res.<span class="fn">status</span>(401).<span class="fn">json</span>({ error: <span class="str">'No autenticado'</span> });
+  }
+};</code></pre>
+
+        <h4>17.4 Verificación de Sesión en el Frontend</h4>
+        <p>Al cargar la página de login, el frontend verifica automáticamente si el usuario ya está autenticado mediante el endpoint <code>GET /api/me</code>:</p>
+        <pre><code><span class="cmt">// public/js/login.js: Verificación de autenticación</span>
+<span class="kw">async function</span> <span class="fn">checkAuth</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/me'</span>);
+    <span class="kw">const</span> data = <span class="kw">await</span> response.<span class="fn">json</span>();
+    
+    <span class="kw">if</span> (data.authenticated) {
+      window.location.href = <span class="str">'/index.html'</span>;
+    }
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">'Error verificando autenticación:'</span>, error);
+  }
+}</code></pre>
+
+        <h4>17.5 Cierre de Sesión (Logout)</h4>
+        <p>El usuario puede cerrar sesión mediante el endpoint <code>POST /api/logout</code>, que destruye la sesión en el servidor:</p>
+        <pre><code><span class="cmt">// server.js: Endpoint de logout</span>
+app.<span class="fn">post</span>(<span class="str">'/api/logout'</span>, (req, res) => {
+  req.session.<span class="fn">destroy</span>();
+  res.<span class="fn">json</span>({ success: <span class="kw">true</span> });
+});</code></pre>
+
+        <h4>17.6 Roles de Usuario</h4>
+        <p>El sistema soporta roles diferenciados (admin, operador) que pueden utilizarse para implementar permisos granulares en el futuro. Actualmente, el rol se almacena en la sesión pero no se aplica lógica de restricción específica.</p>
+
+        <div class="alert" style="background: rgba(16, 185, 129, 0.05); border-color: #10b981;">
+          <strong>💡 Mejoras Futuras:</strong>
+          <ul>
+            <li>Implementar hashing de contraseñas con bcrypt.</li>
+            <li>Agregar protección contra fuerza bruta (rate limiting).</li>
+            <li>Implementar permisos basados en roles (RBAC) para restringir operaciones críticas.</li>
+            <li>Configurar HTTPS para encriptar el tráfico de credenciales.</li>
           </ul>
         </div>
       </section>
