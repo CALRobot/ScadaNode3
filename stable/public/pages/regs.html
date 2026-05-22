@@ -1,0 +1,47 @@
+<div class="page-container">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;">
+    <h2 style="margin: 0; color: var(--text-main); font-weight: 500;">Registros del PLC</h2>
+  </div>
+
+  <div class="regs-grid">
+    
+    <!-- Columna Izquierda: Lectura -->
+    <div class="regs-col">
+      <h3 class="regs-col-title">LECTURA (R0 - R59)</h3>
+      <div class="regs-list-container">
+        <table class="regs-table" id="table-read">
+          <thead>
+            <tr>
+              <th width="15%">Reg.</th>
+              <th width="50%">Tag / Descripción</th>
+              <th width="35%">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Generado dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Lectura / Escritura -->
+    <div class="regs-col">
+      <h3 class="regs-col-title">ESCRITURA / LECTURA (R60 - R119)</h3>
+      <div class="regs-list-container">
+        <table class="regs-table" id="table-write">
+          <thead>
+            <tr>
+              <th width="15%">Reg.</th>
+              <th width="40%">Tag / Descripción</th>
+              <th width="45%">Control de Escritura</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Generado dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

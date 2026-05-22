@@ -1,0 +1,232 @@
+/* public/css/layout.css */
+
+.layout-container {
+  padding: 10px;
+}
+
+/* Barra Superior Global */
+.global-commands {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(30, 30, 45, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 20px 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  margin-bottom: 30px;
+}
+
+.global-info h3 {
+  margin: 0;
+  color: var(--text-main);
+  letter-spacing: 1px;
+}
+
+.global-info p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+.global-actions {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.global-action-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  border-radius: 8px;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-emergency {
+  border: 1px solid #ef4444 !important;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+.btn-emergency:hover {
+  background: #ef4444 !important;
+  color: white !important;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+}
+
+/* Rejilla de Máquinas */
+.machines-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+/* Tarjeta Premium */
+.machine-card-premium {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.machine-card-premium:hover {
+  transform: translateY(-5px);
+  border-color: rgba(124, 58, 237, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.mcard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mcard-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mcard-title-group h4 {
+  margin: 0;
+  font-size: 1.1em;
+  color: var(--text-main);
+}
+
+/* LEDs */
+.led-status {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.led-status.online { background-color: #22c55e; box-shadow: 0 0 12px #22c55e; }
+.led-status.offline { background-color: #ef4444; box-shadow: 0 0 10px #ef4444; }
+.led-status.gray { background-color: #3f3f46; }
+
+.led-small {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #3f3f46;
+}
+.led-small.on { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
+
+/* Stats en la tarjeta */
+.mcard-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px 5px;
+  border-radius: 8px;
+}
+
+.stat-label {
+  font-size: 0.65em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 1.1em;
+  color: var(--purple-light);
+}
+
+.stat-val small { font-size: 0.6em; margin-left: 2px; }
+
+/* Acciones (Botones) */
+.mcard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.action-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8em;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.btn-group {
+  display: flex;
+  gap: 5px;
+}
+
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.7em;
+  min-width: 45px;
+}
+
+.mcard-footer {
+  margin-top: 10px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(124, 58, 237, 0.5);
+  color: var(--purple-light);
+}
+
+.btn-outline:hover {
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* Badge Offline/Online */
+.badge {
+  font-size: 0.65em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  background: #3f3f46;
+  color: #a1a1aa;
+}
+.badge.online { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+
+/* Máquinas inactivas */
+.machine-card-premium.inactive {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+}
+
+.machine-card-premium.inactive:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: none;
+}

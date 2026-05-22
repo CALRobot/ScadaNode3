@@ -1,0 +1,15 @@
+{
+  "devices": [
+    {
+      "id": "PLC1",
+      "host": "192.168.0.1",
+      "port": 505,
+      "pollMs": 250,
+      "readStart": 0,
+      "readLength": 60,
+      "writeStart": 60,
+      "writeLength": 60,
+      "totalRegs": 120
+    }
+  ]
+}

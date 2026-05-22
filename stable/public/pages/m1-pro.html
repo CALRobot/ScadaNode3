@@ -1,0 +1,68 @@
+<div id="page-m1-pro" class="content">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <h3 style="margin: 0;">M1 - VISTA SINÓPTICA (PRO)</h3>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div id="m1-pro-status-led" class="status-led-large"></div>
+        <span id="m1-pro-status-text" style="font-size: 0.8em; text-transform: uppercase;">MODO</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; border-left: 1px solid #444; padding-left: 20px;">
+        <div id="m1-pro-ciclo-led-header" class="status-led-large"></div>
+        <span id="m1-pro-ciclo-text-header"
+          style="font-size: 0.8em; color: #aaa; font-weight: bold; text-transform: uppercase;">CICLO</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="synoptic-wrapper" style="width: 100%; max-width: 1000px; margin: 0 auto;">
+    <div class="synoptic-container">
+      <img src="img/Maquina3.jpg" style="width: 100%; height: auto; display: block; opacity: 0.8;">
+
+      <!-- PANEL DE TEMPERATURAS -->
+      <div id="ov-m1-temps"
+        style="position: absolute; top: 10%; left: 5%; display: flex; flex-direction: column; gap: 10px;">
+        <div class="synoptic-overlay">
+          <span class="overlay-label">MOLDE SUPERIOR</span>
+          <span id="m1-pro-temp-sup" class="overlay-value">0</span><span style="font-size:0.7em; color:#777;">°C</span>
+        </div>
+        <div class="synoptic-overlay">
+          <span class="overlay-label">MOLDE INFERIOR</span>
+          <span id="m1-pro-temp-inf" class="overlay-value">0</span><span style="font-size:0.7em; color:#777;">°C</span>
+        </div>
+      </div>
+
+      <!-- PANEL DE PRODUCCIÓN -->
+      <div id="ov-m1-prod"
+        style="position: absolute; top: 10%; right: 5%; display: flex; flex-direction: column; gap: 10px;">
+        <div class="synoptic-overlay" style="border-color: #28a745;">
+          <span class="overlay-label">GOLPES TOTALES</span>
+          <span id="m1-pro-prod-actual" class="overlay-value">0</span>
+        </div>
+        <div class="synoptic-overlay" style="border-color: #ffc107;">
+          <span class="overlay-label">TIEMPO CICLO</span>
+          <span id="m1-pro-tpo-ciclo" class="overlay-value">0</span><span style="font-size:0.7em; color:#777;">ms</span>
+        </div>
+      </div>
+
+      <!-- ICONOS DINÁMICOS -->
+      <div id="m1-pro-icon-res" style="position: absolute; top: 35%; left: 45%;">
+        <img src="img/resistor.jpg" id="m1-pro-img-res"
+          style="width: 40px; height: 40px; border-radius: 4px; filter: grayscale(1);">
+      </div>
+      <div id="m1-pro-icon-motor" style="position: absolute; bottom: 25%; left: 45%;">
+        <img src="img/motor.png" id="m1-pro-img-motor" style="width: 40px; height: 40px; filter: grayscale(1);">
+      </div>
+
+      <!-- CONTROLES INFERIORES -->
+      <div
+        style="position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px; border: 1px solid #444;">
+        <img src="img/service.jpg" onclick="m1_cmdModo(0)"
+          style="width: 30px; height: 30px; cursor: pointer; border-radius: 5px;" title="Manual">
+        <img src="img/run.jpg" onclick="m1_cmdCiclo(1)"
+          style="width: 30px; height: 30px; cursor: pointer; border-radius: 5px;" title="Start">
+        <img src="img/stop.jpg" onclick="m1_cmdCiclo(0)"
+          style="width: 30px; height: 30px; cursor: pointer; border-radius: 5px;" title="Stop">
+      </div>
+    </div>
+  </div>
+</div>

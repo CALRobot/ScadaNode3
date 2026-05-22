@@ -1,0 +1,62 @@
+// ============================================================
+// FB_Sim_Produccion_V7 — Versión Permanente (Salidas fijas)
+// ============================================================
+
+FUNCTION_BLOCK "FB_Sim_Produccion"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.7
+
+VAR_INPUT
+    Enable     : BOOL := TRUE;
+    IntervaloS : TIME := T#1M;
+END_VAR
+
+VAR_OUTPUT
+    outSPSup   : INT;
+    outSPInf   : INT;
+    outConsumo : INT;
+    outTempSup : INT;
+    outTempInf : INT;
+    outCiclo   : INT;
+    outGolpes  : INT;
+END_VAR
+
+VAR
+    tCiclo : TON;
+    Seed   : UDINT := 54321;
+    GolpesAcum : INT := 0;
+    CicloUltimo : INT := 10;      // Valor inicial para que no empiece en 0
+    PrimerScan : BOOL := TRUE;
+END_VAR
+
+VAR_TEMP
+    valInt : INT;
+END_VAR
+
+BEGIN
+    // 1. Temporizador
+    #tCiclo(IN := #Enable AND NOT #tCiclo.Q, PT := #IntervaloS);
+
+    IF NOT #Enable THEN RETURN; END_IF;
+
+    // 2. CÁLCULO DE VALORES DINÁMICOS (Cada scan)
+    #Seed := #Seed * 1664525 + 1013904223;
+    
+    #outSPSup := 200 + UDINT_TO_INT(#Seed MOD 3) - 1; 
+    #outSPInf := 180 + UDINT_TO_INT((#Seed / 10) MOD 3) - 1;
+    #outTempSup := 198 + UDINT_TO_INT((#Seed / 100) MOD 5);
+    #outTempInf := 178 + UDINT_TO_INT((#Seed / 1000) MOD 5);
+    #outConsumo := 20 + UDINT_TO_INT((#Seed / 50) MOD 2);
+
+    // 3. LÓGICA DE INCREMENTO (Solo cuando el timer da el pulso)
+    IF #tCiclo.Q OR #PrimerScan THEN
+        #GolpesAcum := #GolpesAcum + 1;
+        #CicloUltimo := 8 + UDINT_TO_INT(#Seed MOD 5);
+        #PrimerScan := FALSE;
+    END_IF;
+
+    // 4. ASIGNACIÓN PERMANENTE (Fuera del IF para que nunca sea cero)
+    #outGolpes := #GolpesAcum;
+    #outCiclo  := #CicloUltimo;
+
+END_FUNCTION_BLOCK

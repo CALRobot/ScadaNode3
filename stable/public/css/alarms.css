@@ -1,0 +1,51 @@
+/* public/css/alarms.css */
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 0.9em;
+  color: var(--text-main);
+  background: rgba(25, 25, 35, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tbl th {
+  background: rgba(124, 58, 237, 0.15);
+  color: var(--purple-light);
+  text-align: left;
+  padding: 14px 18px;
+  border-bottom: 2px solid var(--purple-dark);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
+.tbl td {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* Líneas finas */
+  vertical-align: middle;
+}
+
+.tbl tr:hover td {
+  background: rgba(124, 58, 237, 0.05);
+  transition: background 0.2s;
+}
+
+/* Columna PLC destacada */
+#alarms-history-table td:nth-child(2) {
+  font-family: monospace;
+  font-weight: bold;
+}
+
+/* Estado de alarma */
+.status-active {
+  color: #ff4444;
+  font-weight: bold;
+}
+
+.status-normal {
+  color: #44ff44;
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - SCADA Node3</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect x=%2210%22 y=%2210%22 width=%2280%22 height=%2260%22 rx=%225%22 fill=%22%23a78bfa%22 stroke=%22black%22 stroke-width=%225%22/><path d=%22M30 70 L20 90 L80 90 L70 70%22 fill=%22%23a78bfa%22 stroke=%22black%22 stroke-width=%225%22/></svg>">
+  <link rel="stylesheet" href="/lib/fonts/inter.css">
+  <link rel="stylesheet" href="/css/analytics.css">
+  <script src="/lib/chart.umd.min.js"></script>
+  <script src="/lib/jspdf.umd.min.js"></script>
+  <script src="/lib/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <div class="logo-badge">📊</div>
+      <div>
+        <h1>Panel de Analítica <span>SCADA Node3 — Producción</span></h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="/" class="back-link">← Volver al SCADA</a>
+      <button class="btn btn-secondary" id="btn-refresh">🔄 Actualizar</button>
+      <button class="btn btn-success" id="btn-pdf">📄 Exportar PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="controls-bar">
+      <label>PLC:</label>
+      <select id="sel-plc">
+        <option value="PLC1">PLC1 — Máquina 1</option>
+      </select>
+      <div class="separator"></div>
+      <label>Período:</label>
+      <select id="sel-period">
+        <option value="50">Últimas 50 muestras</option>
+        <option value="100">Últimas 100 muestras</option>
+        <option value="200" selected>Últimas 200 muestras</option>
+        <option value="500">Últimas 500 muestras</option>
+      </select>
+      <div class="separator"></div>
+      <label>Intervalo de registro:</label>
+      <input type="number" id="inp-interval" min="1" max="1440" value="30" style="width:70px">
+      <label>min</label>
+      <button class="btn btn-secondary" id="btn-set-interval">Aplicar</button>
+      <div class="logger-status">
+        <div class="logger-dot"></div>
+        <span id="logger-status-text">Registro activo</span>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon">🏭</div>
+        <div class="kpi-value" id="kpi-golpes">—</div>
+        <div class="kpi-label">Golpes Producción</div>
+        <div class="kpi-sub" id="kpi-golpes-sub">Último snapshot</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-value" id="kpi-ciclo">—</div>
+        <div class="kpi-label">Tiempo de Ciclo (s)</div>
+        <div class="kpi-sub" id="kpi-ciclo-sub">Medio de la sesión</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🌡️</div>
+        <div class="kpi-value" id="kpi-temp-sup">—</div>
+        <div class="kpi-label">Temp. Superior (°C)</div>
+        <div class="kpi-sub" id="kpi-temp-sup-sub">Última lectura</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">🌡️</div>
+        <div class="kpi-value" id="kpi-temp-inf">—</div>
+        <div class="kpi-label">Temp. Inferior (°C)</div>
+        <div class="kpi-sub" id="kpi-temp-inf-sub">Última lectura</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">⚡</div>
+        <div class="kpi-value" id="kpi-energia">—</div>
+        <div class="kpi-label">Consumo Actual (kW)</div>
+        <div class="kpi-sub" id="kpi-energia-sub">Último snapshot</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>📈 Producción (Golpes)</h3>
+        <div class="chart-subtitle">Acumulado de golpes a lo largo del tiempo</div>
+        <div class="chart-wrapper" style="height:260px">
+          <canvas id="chart-produccion"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>⚡ Consumo Energético</h3>
+        <div class="chart-subtitle">kW medios registrados</div>
+        <div class="chart-wrapper" style="height:260px">
+          <canvas id="chart-energia"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid-bottom">
+      <div class="chart-card">
+        <h3>⏱️ Tiempo de Ciclo</h3>
+        <div class="chart-subtitle">Evolución del tiempo por ciclo (s)</div>
+        <div class="chart-wrapper" style="height:220px">
+          <canvas id="chart-ciclo"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>🌡️ Temperaturas del Molde</h3>
+        <div class="chart-subtitle">Superior e Inferior (°C)</div>
+        <div class="chart-wrapper" style="height:220px">
+          <canvas id="chart-temp"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h3>📋 Últimos Registros</h3>
+      <div id="table-container">
+        <div class="empty-state">
+          <div class="icon">⏳</div>
+          <p>Cargando datos...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/analytics.js"></script>
+</body>
+</html>

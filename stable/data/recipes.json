@@ -1,0 +1,104 @@
+{
+  "recipes": [
+    {
+      "id": 1,
+      "name": "Receta 1",
+      "description": "Galleta de arroz — línea clásica.",
+      "values": {
+        "RECETA_ESPESOR": 12,
+        "RECETA_EMPUJE": 120,
+        "RECETA_DISPARO": 180,
+        "RECETA_EXPANSION": 90,
+        "RECETA_2do_EMPUJE": 110,
+        "RECETA_2do_DISPARO": 170,
+        "RECETA_2do_EXPANSION": 85,
+        "RECETA_DURACION_LIMP_DOSIF": 100,
+        "RECETA_RETRASO_LIMP_DOSIF": 50,
+        "RETRASO_SUB_PLATO_DBLCIC": 23,
+        "RECETA_VASO": 250,
+        "RECETA_CICLOS_LIMP_DOSIF": 88,
+        "RECETA_TEMP_CONSIG_SUP": 296,
+        "RECETA_TEMP_CONSIG_INF": 264,
+        "RECETA_NUM_FORMAS_MOLDE": 12,
+        "SET_NUM_RECETA": 1
+      },
+      "createdAt": "2026-05-02T08:00:00.000Z",
+      "updatedAt": "2026-05-03T06:59:24.123Z"
+    },
+    {
+      "id": 2,
+      "name": "Receta 2",
+      "description": "Galleta de arroz — variante fina / más disparo.",
+      "values": {
+        "RECETA_ESPESOR": 14,
+        "RECETA_EMPUJE": 115,
+        "RECETA_DISPARO": 195,
+        "RECETA_EXPANSION": 95,
+        "RECETA_2do_EMPUJE": 105,
+        "RECETA_2do_DISPARO": 175,
+        "RECETA_2do_EXPANSION": 88,
+        "RECETA_DURACION_LIMP_DOSIF": 105,
+        "RECETA_RETRASO_LIMP_DOSIF": 48,
+        "RETRASO_SUB_PLATO_DBLCIC": 25,
+        "RECETA_VASO": 245,
+        "RECETA_CICLOS_LIMP_DOSIF": 90,
+        "RECETA_TEMP_CONSIG_SUP": 290,
+        "RECETA_TEMP_CONSIG_INF": 258,
+        "RECETA_NUM_FORMAS_MOLDE": 12,
+        "SET_NUM_RECETA": 2
+      },
+      "createdAt": "2026-05-02T09:00:00.000Z",
+      "updatedAt": "2026-05-02T09:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "name": "Receta 3",
+      "description": "Galleta de maíz — línea estándar.",
+      "values": {
+        "RECETA_ESPESOR": 18,
+        "RECETA_EMPUJE": 135,
+        "RECETA_DISPARO": 175,
+        "RECETA_EXPANSION": 82,
+        "RECETA_2do_EMPUJE": 118,
+        "RECETA_2do_DISPARO": 165,
+        "RECETA_2do_EXPANSION": 80,
+        "RECETA_DURACION_LIMP_DOSIF": 110,
+        "RECETA_RETRASO_LIMP_DOSIF": 52,
+        "RETRASO_SUB_PLATO_DBLCIC": 28,
+        "RECETA_VASO": 260,
+        "RECETA_CICLOS_LIMP_DOSIF": 85,
+        "RECETA_TEMP_CONSIG_SUP": 302,
+        "RECETA_TEMP_CONSIG_INF": 268,
+        "RECETA_NUM_FORMAS_MOLDE": 10,
+        "SET_NUM_RECETA": 3
+      },
+      "createdAt": "2026-05-02T10:00:00.000Z",
+      "updatedAt": "2026-05-02T10:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "name": "Receta 4",
+      "description": "Galleta de maíz — variante alta expansión.",
+      "values": {
+        "RECETA_ESPESOR": 19,
+        "RECETA_EMPUJE": 128,
+        "RECETA_DISPARO": 168,
+        "RECETA_EXPANSION": 98,
+        "RECETA_2do_EMPUJE": 122,
+        "RECETA_2do_DISPARO": 160,
+        "RECETA_2do_EXPANSION": 92,
+        "RECETA_DURACION_LIMP_DOSIF": 115,
+        "RECETA_RETRASO_LIMP_DOSIF": 55,
+        "RETRASO_SUB_PLATO_DBLCIC": 30,
+        "RECETA_VASO": 255,
+        "RECETA_CICLOS_LIMP_DOSIF": 82,
+        "RECETA_TEMP_CONSIG_SUP": 305,
+        "RECETA_TEMP_CONSIG_INF": 270,
+        "RECETA_NUM_FORMAS_MOLDE": 10,
+        "SET_NUM_RECETA": 4
+      },
+      "createdAt": "2026-05-02T11:00:00.000Z",
+      "updatedAt": "2026-05-02T11:00:00.000Z"
+    }
+  ]
+}
