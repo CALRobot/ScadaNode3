@@ -228,12 +228,32 @@
         
         <h4>A. Requisitos previos</h4>
         <ul>
-          <li><strong>Node.js:</strong> Descarga e instala la versión LTS desde <a href="https://nodejs.org" target="_blank" style="color:var(--primary-color)">nodejs.org</a>.</li>
+          <li><strong>Node.js:</strong> Descarga e instala la versión <strong>v18 LTS o superior</strong> (recomendado v18.20.8) desde <a href="https://nodejs.org" target="_blank" style="color:var(--primary-color)">nodejs.org</a>.</li>
           <li><strong>Acceso de Red:</strong> El PC debe tener una IP fija en el mismo rango que los PLCs (ej: 192.168.0.XXX).</li>
         </ul>
 
-        <h4>B. Instalación del Software</h4>
-        <div style="background: rgba(255,255,255,0.05); border: 1px solid #7c3aed; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+        <h4>B. Instalación del Software y PLC</h4>
+        <div style="background: rgba(124,58,237,0.1); border: 1px solid #7c3aed; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <strong>✅ OPCIÓN 1: Instalación Rápida (Recomendada para Usuarios)</strong>
+          <ol style="margin-top: 10px;">
+            <li>Copia la carpeta <code>stable/</code> (última versión estable) al disco local.</li>
+            <li>Abre una terminal (PowerShell o CMD) en esa carpeta.</li>
+            <li>Ejecuta: <code>npm install</code> (instala todas las dependencias).</li>
+            <li>Ejecuta: <code>node server.js</code> para arrancar.</li>
+          </ol>
+        </div>
+
+        <div style="background: rgba(16,185,129,0.1); border: 1px solid #10b981; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <strong>🔌 Carpeta PLC (Para Simulación o Conexión Real)</strong>
+          <p style="margin-top: 10px;">Dentro de la carpeta <code>PLC/</code> encontrarás:</p>
+          <ul style="margin-top: 10px;">
+            <li><strong><code>ModbusTCP_S7-1500.zap18</code></strong>: Proyecto completo de TIA Portal (Siemens S7-1500) listo para importar.</li>
+            <li><strong><code>FC_Sim_Produccion.scl</code></strong>: Código fuente del bloque de función para simulación/producción.</li>
+          </ul>
+          <p style="margin-top: 10px;">Importa el proyecto .zap18 en TIA Portal para simular la máquina o conectar con un PLC real. El SCADA se comunica a través de Modbus TCP en el puerto 505 (configurable en <code>config/plcs.json</code>).</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid #444; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
           <strong>⚠️ NOTA TÉCNICA IMPORTANTE:</strong>
           <ul>
             <li><strong>Librería Modbus:</strong> Este SCADA utiliza <code>jsmodbus</code> específicamente para comunicación TCP/IP optimizada.</li>
@@ -241,8 +261,10 @@
             <li><strong>Package.json:</strong> Las dependencias críticas son <code>express</code>, <code>socket.io</code> y <code>jsmodbus</code>.</li>
           </ul>
         </div>
-        <ol>
-          <li>Copia la carpeta <code>ScadaNode3</code> al disco local (recomendado <code>C:\ScadaNode3</code>).</li>
+
+        <strong>✅ OPCIÓN 2: Instalación Completa (Para Desarrolladores)</strong>
+        <ol style="margin-top: 10px;">
+          <li>Copia toda la carpeta <code>ScadaNode3</code> al disco local (recomendado <code>C:\ScadaNode3</code>).</li>
           <li>Abre una terminal (PowerShell o CMD) en esa carpeta.</li>
           <li>Ejecuta el comando: <code>npm install</code>. Esto descargará todas las librerías necesarias.</li>
         </ol>
@@ -267,6 +289,9 @@
         
         <pre><code>ScadaNode3/
 ├── server.js              <span class="cmt">// El corazón del sistema (Backend Node.js)</span>
+├── PLC/                   <span class="cmt">// Archivos de TIA Portal (Siemens S7)</span>
+│   ├── ModbusTCP_S7-1500.zap18 <span class="cmt">// Proyecto completo de TIA Portal</span>
+│   └── FC_Sim_Produccion.scl <span class="cmt">// Bloque de función para simulación/producción</span>
 ├── config/                <span class="cmt">// Configuración de Hardware y Tags</span>
 │   ├── plcs.json          <span class="cmt">// IPs y puertos de los PLCs conectados</span>
 │   └── tags_plc1.js       <span class="cmt">// Definición central de Tags para el servidor</span>
