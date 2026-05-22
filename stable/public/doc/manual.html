@@ -196,16 +196,16 @@
       <li><a href="#escritura">6. Escritura y Comandos</a></li>
       <li><a href="#pulsadores">7. Botones y Pulsadores</a></li>
       <li><a href="#alarmas">8. Historial de Alarmas</a></li>
-      <li><a href="#email" style="color: #7c3aed; font-weight: 600;">8.5. Sistema de Notificaciones por Email</a></li>
-      <li><a href="#recetas">9. Sistema de Recetas</a></li>
-      <li><a href="#multiplc">10. Múltiples PLCs</a></li>
-      <li><a href="#analitica" style="color: #7c3aed; font-weight: 600;">11. Analítica y Producción</a></li>
-      <li><a href="#tiempos">12. Gestión de Tiempos</a></li>
-      <li><a href="#backend">13. Lógica Interna del Servidor</a></li>
-      <li><a href="#arquitectura">14. Arquitectura de Intercambio (DB1)</a></li>
-      <li><a href="#indicadores">15. Indicadores Visuales y Sinóptico PRO</a></li>
-      <li><a href="#operacion-rapida" style="color: #10b981; font-weight: 600;">16. Guía de Operación Rápida</a></li>
-      <li><a href="#autenticacion" style="color: #f59e0b; font-weight: 600;">17. Sistema de Autenticación</a></li>
+      <li><a href="#email" style="color: #7c3aed; font-weight: 600;">9. Sistema de Notificaciones por Email</a></li>
+      <li><a href="#recetas">10. Sistema de Recetas</a></li>
+      <li><a href="#multiplc">11. Múltiples PLCs</a></li>
+      <li><a href="#analitica" style="color: #7c3aed; font-weight: 600;">12. Analítica y Producción</a></li>
+      <li><a href="#tiempos">13. Gestión de Tiempos</a></li>
+      <li><a href="#backend">14. Lógica Interna del Servidor</a></li>
+      <li><a href="#arquitectura">15. Arquitectura de Intercambio (DB1)</a></li>
+      <li><a href="#indicadores">16. Indicadores Visuales y Sinóptico PRO</a></li>
+      <li><a href="#operacion-rapida" style="color: #10b981; font-weight: 600;">17. Guía de Operación Rápida</a></li>
+      <li><a href="#autenticacion" style="color: #f59e0b; font-weight: 600;">18. Sistema de Autenticación</a></li>
     </ul>
 
     <!-- LOGO DE EMPRESA AL PIE -->
@@ -438,16 +438,61 @@ socket.<span class="fn">on</span>(<span class="str">'plc_update'</span>, (<span 
       <!-- SECCIÓN 8 -->
       <section id="alarmas">
         <h3>8. Historial de Alarmas</h3>
-        <h4>Lógica de Detección</h4>
-        <p>El servidor compara en cada ciclo de lectura (500ms) el estado actual de los tags de categoría "Alarma" con el estado anterior guardado en memoria. Si detecta un cambio, escribe una línea en <code>data/alarms.jsonl</code>.</p>
         
-        <h4>Descripciones Dinámicas</h4>
-        <p>A diferencia de versiones anteriores, el sistema ahora es <strong>totalmente dinámico</strong>. Los textos de las alarmas no están fijos en el código del navegador, sino que se leen directamente del diccionario de tags (<code>TAGS_DICT</code>). Esto permite que, si añades una alarma nueva en el PLC y la defines en el diccionario, aparecerá automáticamente en la web con su descripción correcta.</p>
+        <h4>8.1 ¿Qué es el Historial de Alarmas?</h4>
+        <p>Es un registro cronológico de todos los eventos de alarma que ocurren en el sistema: tanto cuándo se activa una alarma como cuándo se normaliza (vuelve a su estado normal).</p>
+        
+        <h4>8.2 ¿Dónde se guardan las alarmas?</h4>
+        <p>Todas las alarmas se almacenan en el archivo <code>data/alarms.jsonl</code>. Utiliza el formato <strong>JSON Lines</strong>, lo que significa que cada línea es un objeto JSON independiente.</p>
+        
+        <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin: 15px 0;">
+          <strong>Ejemplo de entrada en alarms.jsonl:</strong>
+          <pre><code>{
+  "date": "2026-05-22T12:34:56.789Z",
+  "fecha_es": "22/05/2026 14:34:56",
+  "plc": "PLC1",
+  "tag": "ALM_TEMPERATURA_ALTA",
+  "desc": "Temperatura del molde superior demasiado alta",
+  "status": "ACTIVADA"
+}</code></pre>
+        </div>
+        
+        <h4>8.3 ¿Cómo se generan las alarmas?</h4>
+        <p>El proceso es automático y se ejecuta en el servidor (<code>server.js:244-273</code>):</p>
+        <ol>
+          <li>En cada ciclo de lectura del PLC (500ms), el servidor compara el estado actual de los tags de alarma con el estado anterior.</li>
+          <li>Los tags de alarma son aquellos que:
+            <ul>
+              <li>Tienen la categoría <code>"Alarma"</code> en <code>config/tags_plc1.js</code>, o</li>
+              <li>Su nombre empieza por <code>ALM_</code></li>
+            </ul>
+          </li>
+          <li>Si detecta un cambio (de 0 a 1 o viceversa), crea una nueva entrada en el historial.</li>
+          <li>La entrada incluye: fecha y hora (ISO y formato español), PLC, nombre del tag, descripción y estado (<code>ACTIVADA</code> o <code>NORMALIZADA</code>).</li>
+          <li>Si la alarma se activa, envía automáticamente un email (si el sistema de notificaciones está activado).</li>
+        </ol>
+        
+        <h4>8.4 ¿Cómo funciona la página de Alarmas?</h4>
+        <p>La página web (<code>public/pages/alarms.html</code>) muestra el historial completo:</p>
+        <ul>
+          <li><strong>API:</strong> Utiliza el endpoint <code>GET /api/alarms/history</code> para obtener todas las alarmas desde el servidor.</li>
+          <li><strong>Auto-refresco:</strong> Actualiza automáticamente cada 3 segundos para mostrar las últimas alarmas.</li>
+          <li><strong>Orden:</strong> Muestra las alarmas más recientes en la parte superior.</li>
+          <li><strong>Colores:</strong>
+            <ul>
+              <li><span style="color: #ff4444; font-weight: bold;">ACTIVADA</span>: Rojo brillante</li>
+              <li><span style="color: #44ff44; font-weight: bold;">NORMALIZADA</span>: Verde brillante</li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h4>8.5 Descripciones Dinámicas</h4>
+        <p>A diferencia de versiones anteriores, el sistema ahora es <strong>totalmente dinámico</strong>. Los textos de las alarmas no están fijos en el código del navegador, sino que se leen directamente del diccionario de tags (<code>config/tags_plc1.js</code> y <code>public/js/tags_dict.js</code>). Esto permite que, si añades una alarma nueva en el PLC y la defines en el diccionario, aparecerá automáticamente en la web con su descripción correcta.</p>
       </section>
 
-      <!-- SECCIÓN 8.5: SISTEMA DE NOTIFICACIONES POR EMAIL -->
+      <!-- SECCIÓN 9: SISTEMA DE NOTIFICACIONES POR EMAIL -->
       <section id="email">
-        <h3 style="color: #7c3aed;">8.5. Sistema de Notificaciones por Email</h3>
+        <h3 style="color: #7c3aed;">9. Sistema de Notificaciones por Email</h3>
         <p>El SCADA incluye un sistema de notificaciones por email para alertar sobre eventos críticos de producción. Este sistema utiliza la librería <code>nodemailer</code> y puede configurarse para diferentes proveedores (Gmail, Ethereal, etc.).</p>
 
         <h4>Configuración</h4>
@@ -507,9 +552,9 @@ const EMAIL_COOLDOWN_MS = 60000; // 1 minuto</code></pre>
         </div>
       </section>
 
-      <!-- SECCIÓN 9 -->
+      <!-- SECCIÓN 10 -->
       <section id="recetas">
-        <h3>9. Sistema de Recetas (El flujo JSON -> PLC)</h3>
+        <h3>10. Sistema de Recetas (El flujo JSON -> PLC)</h3>
         <p>Para entender las recetas, es vital distinguir entre el <strong>Frontend</strong> (lo que ves en el navegador) y el <strong>Backend</strong> (el servidor Node.js que corre en el PC).</p>
         
         <div class="alert" style="background: rgba(124, 58, 237, 0.05); border-color: #7c3aed;">
@@ -547,9 +592,9 @@ const EMAIL_COOLDOWN_MS = 60000; // 1 minuto</code></pre>
           de lectura), el SCADA refrescará la pantalla mostrando los nuevos valores leídos del PLC.</p>
       </section>
 
-      <!-- SECCIÓN 10 -->
+      <!-- SECCIÓN 11 -->
       <section id="multiplc">
-        <h3>10. Múltiples PLCs y Configuración</h3>
+        <h3>11. Múltiples PLCs y Configuración</h3>
         <p>El SCADA está diseñado con arquitectura modular para escalar a decenas de PLCs. Node.js maneja múltiples
           conexiones Modbus de forma asíncrona (es decir, atiende a PLC1 y PLC2 de forma simultánea sin que uno
           ralentice al otro).</p>
@@ -591,9 +636,9 @@ plcControllers.PLC2 = <span class="fn">createPlcController</span>(plc2Device, ta
             <br><code>socket.emit('escribir', { id: 'PLC2', addr: 60, value: 512 })</code></p>
       </section>
 
-      <!-- SECCIÓN 11 -->
+      <!-- SECCIÓN 12 -->
       <section id="analitica">
-        <h3 style="color: #7c3aed;">11. Analítica y Producción (Data Logging)</h3>
+        <h3 style="color: #7c3aed;">12. Analítica y Producción (Data Logging)</h3>
         <p>El sistema ha evolucionado de un simple panel de control a una herramienta de gestión de eficiencia. Esta sección explica cómo se capturan y representan los datos de producción.</p>
 
         <h4>Registro de Datos (Backend)</h4>
@@ -633,9 +678,9 @@ plcControllers.PLC2 = <span class="fn">createPlcController</span>(plc2Device, ta
         </div>
       </section>
 
-      <!-- SECCIÓN 12: GESTIÓN DE TIEMPOS -->
+      <!-- SECCIÓN 13: GESTIÓN DE TIEMPOS -->
       <section id="tiempos">
-        <h2 id="sec-12">12. Gestión de Tiempos</h2>
+        <h2 id="sec-13">13. Gestión de Tiempos</h2>
         <p>Es fundamental distinguir entre los tres niveles de temporización del sistema:</p>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 20px;">
@@ -653,12 +698,12 @@ plcControllers.PLC2 = <span class="fn">createPlcController</span>(plc2Device, ta
           </div>
         </div>
       </section>
-      <!-- SECCIÓN 13: LÓGICA BACKEND -->
+      <!-- SECCIÓN 14: LÓGICA BACKEND -->
       <section id="backend">
-        <h2 id="sec-13">13. Lógica Interna del Servidor (Server.js)</h2>
+        <h2 id="sec-14">14. Lógica Interna del Servidor (Server.js)</h2>
         <p>El servidor Node.js no solo actúa como puente Modbus, sino que gestiona tres motores críticos de datos:</p>
 
-        <h4 style="color: #7c3aed;">13.1 Motor de Recetas (API CRUD)</h4>
+        <h4 style="color: #7c3aed;">14.1 Motor de Recetas (API CRUD)</h4>
         <p>Gestiona el archivo <code>data/recipes.json</code> mediante cuatro endpoints estándar:</p>
         <ul>
           <li><code>GET /api/recipes</code>: Carga la lista completa de recetas.</li>
@@ -667,7 +712,7 @@ plcControllers.PLC2 = <span class="fn">createPlcController</span>(plc2Device, ta
           <li><code>DELETE /api/recipes/:id</code>: Elimina una receta del archivo.</li>
         </ul>
 
-        <h4 style="color: #7c3aed;">13.2 Detección de Alarmas (Diferencial)</h4>
+        <h4 style="color: #7c3aed;">14.2 Detección de Alarmas (Diferencial)</h4>
         <p>El servidor compara en cada ciclo de lectura (500ms) el estado actual de los tags de categoría "Alarma" con el estado anterior guardado en memoria:</p>
         <pre><code class="language-javascript">// Fragmento de lógica en server.js
 function logAlarms(id, currentTags) {
@@ -686,7 +731,7 @@ function logAlarms(id, currentTags) {
     });
 }</code></pre>
 
-        <h4 style="color: #7c3aed;">13.3 Motor de Analítica (Snapshots)</h4>
+        <h4 style="color: #7c3aed;">14.3 Motor de Analítica (Snapshots)</h4>
         <p>La función <code>logProduction()</code> realiza capturas de estado de forma cíclica:</p>
         <pre><code class="language-javascript">// Generación de snapshot en server.js
 const logEntry = {
@@ -700,9 +745,9 @@ const logEntry = {
 };
 fs.appendFileSync('./data/production.jsonl', JSON.stringify(logEntry) + '\n');</code></pre>
       </section>
-      <!-- SECCIÓN 14: ARQUITECTURA DE INTERCAMBIO (DB1) -->
+      <!-- SECCIÓN 15: ARQUITECTURA DE INTERCAMBIO (DB1) -->
       <section id="arquitectura">
-        <h2 id="sec-14">14. Arquitectura de Intercambio (DB1 Modbus)</h2>
+        <h2 id="sec-15">15. Arquitectura de Intercambio (DB1 Modbus)</h2>
         <p>Para la comunicación entre el PLC y el SCADA, se ha implementado un bloque de datos global (<strong>DB1</strong>)
           que actúa como zona de intercambio común. Esta elección técnica busca la máxima eficiencia en la lectura masiva de datos.</p>
         
@@ -729,12 +774,12 @@ fs.appendFileSync('./data/production.jsonl', JSON.stringify(logEntry) + '\n');</
         </ul>
         <p><em>Nota: Se recomienda llevar un control estricto de los índices utilizados para evitar colisiones de datos.</em></p>
       </section>
-      <!-- SECCIÓN 15: INDICADORES VISUALES Y SINÓPTICO PRO -->
+      <!-- SECCIÓN 16: INDICADORES VISUALES Y SINÓPTICO PRO -->
       <section id="indicadores">
-        <h2 id="sec-15">15. Indicadores Visuales y Sinóptico PRO</h2>
+        <h2 id="sec-16">16. Indicadores Visuales y Sinóptico PRO</h2>
         <p>El sistema cuenta con una interfaz de monitorización avanzada diseñada para ofrecer feedback inmediato sin necesidad de leer valores numéricos.</p>
 
-        <h4>15.1 LEDs de Cabecera (Estado y Ciclo)</h4>
+        <h4>16.1 LEDs de Cabecera (Estado y Ciclo)</h4>
         <p>En la parte superior de cada página de máquina se encuentran dos indicadores críticos:</p>
         <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
           <tr style="background: rgba(0,0,0,0.05);">
@@ -769,16 +814,16 @@ fs.appendFileSync('./data/production.jsonl', JSON.stringify(logEntry) + '\n');</
           </tr>
         </table>
 
-        <h4>15.2 Vista Sinóptica PRO</h4>
+        <h4>16.2 Vista Sinóptica PRO</h4>
         <p>La vista PRO ofrece una representación gráfica de la máquina con las siguientes características:</p>
         <ul>
           <li><strong>Iconos Dinámicos:</strong> Los componentes (Motor, Resistencias) se iluminan con un efecto <em>glow</em> cuando el PLC confirma su activación.</li>
           <li><strong>Overlays Responsivos:</strong> Los datos de temperatura y producción están "anclados" a la imagen de la máquina mediante coordenadas porcentuales, manteniendo su posición independientemente del tamaño de la pantalla.</li>
           <li><strong>Controles Táctiles:</strong> Barra inferior con iconos rápidos para <code>Service</code>, <code>Run</code> y <code>Stop</code>.</li>
         </ul>
-      <!-- SECCIÓN 16: GUÍA DE OPERACIÓN RÁPIDA -->
+      <!-- SECCIÓN 17: GUÍA DE OPERACIÓN RÁPIDA -->
       <section id="operacion-rapida">
-        <h2 id="sec-16">16. Guía de Operación Rápida</h2>
+        <h2 id="sec-17">17. Guía de Operación Rápida</h2>
         <p>Esta sección resume los procedimientos habituales para el operador de planta.</p>
         
         <div style="background: rgba(124, 58, 237, 0.05); padding: 20px; border-radius: 8px; border: 1px solid #7c3aed;">
@@ -804,12 +849,12 @@ fs.appendFileSync('./data/production.jsonl', JSON.stringify(logEntry) + '\n');</
         </div>
       </section>
 
-      <!-- SECCIÓN 17: SISTEMA DE AUTENTICACIÓN -->
+      <!-- SECCIÓN 18: SISTEMA DE AUTENTICACIÓN -->
       <section id="autenticacion">
-        <h3 style="color: #f59e0b;">17. Sistema de Autenticación</h3>
+        <h3 style="color: #f59e0b;">18. Sistema de Autenticación</h3>
         <p>El SCADA implementa un sistema de autenticación basado en sesiones para proteger el acceso a la interfaz de control. Este sistema garantiza que solo usuarios autorizados puedan operar la máquina y enviar comandos al PLC.</p>
 
-        <h4>17.1 Configuración de Usuarios</h4>
+        <h4>18.1 Configuración de Usuarios</h4>
         <p>Los usuarios se definen en el archivo <code>config/users.json</code>. Cada usuario tiene tres propiedades:</p>
         <pre><code>{
   "users": [
@@ -834,7 +879,7 @@ fs.appendFileSync('./data/production.jsonl', JSON.stringify(logEntry) + '\n');</
           </ul>
         </div>
 
-        <h4>17.2 Flujo de Autenticación</h4>
+        <h4>18.2 Flujo de Autenticación</h4>
         <p>El proceso de login sigue estos pasos:</p>
         <ol>
           <li><strong>Pantalla de Login:</strong> El usuario accede a <code>/login.html</code> e introduce sus credenciales.</li>
