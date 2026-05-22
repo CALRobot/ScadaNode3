@@ -437,6 +437,7 @@ socket.<span class="fn">on</span>(<span class="str">'plc_update'</span>, (<span 
 
       <!-- SECCIÓN 8 -->
       <section id="alarmas">
+        <h3>8. Historial de Alarmas</h3>
         <h4>Lógica de Detección</h4>
         <p>El servidor compara en cada ciclo de lectura (500ms) el estado actual de los tags de categoría "Alarma" con el estado anterior guardado en memoria. Si detecta un cambio, escribe una línea en <code>data/alarms.jsonl</code>.</p>
         
