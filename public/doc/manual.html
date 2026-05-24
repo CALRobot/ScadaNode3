@@ -206,6 +206,7 @@
       <li><a href="#indicadores">16. Indicadores Visuales y Sinóptico PRO</a></li>
       <li><a href="#operacion-rapida" style="color: #10b981; font-weight: 600;">17. Guía de Operación Rápida</a></li>
       <li><a href="#autenticacion" style="color: #f59e0b; font-weight: 600;">18. Sistema de Autenticación</a></li>
+      <li><a href="#actualizacion-node" style="color: #06b6d4; font-weight: 600;">19. Actualización de Node.js</a></li>
     </ul>
 
     <!-- LOGO DE EMPRESA AL PIE -->
@@ -949,6 +950,54 @@ app.<span class="fn">post</span>(<span class="str">'/api/logout'</span>, (req, r
             <li>Configurar HTTPS para encriptar el tráfico de credenciales.</li>
           </ul>
         </div>
+      </section>
+
+      <!-- SECCIÓN 19: ACTUALIZACIÓN DE NODE.JS -->
+      <section id="actualizacion-node">
+        <h3>19. Actualización de Node.js</h3>
+        <p>Este SCADA es compatible con Node.js 18 LTS, 20 LTS, 22 LTS y 24 LTS. Se recomienda mantener Node.js actualizado a la última versión LTS para seguridad y rendimiento.</p>
+        
+        <h4>19.1 Requisitos previos</h4>
+        <p>Se recomienda usar <strong>nvm-windows</strong> (Node Version Manager para Windows) para gestionar múltiples versiones de Node.js de forma sencilla.</p>
+        
+        <h4>19.2 Instalación de nvm-windows</h4>
+        <ol>
+          <li>Descarga la última versión de <code>nvm-setup.exe</code> desde: <a href="https://github.com/coreybutler/nvm-windows/releases" target="_blank">github.com/coreybutler/nvm-windows/releases</a></li>
+          <li>Ejecuta el instalador y sigue las instrucciones (usa las opciones por defecto)</li>
+          <li>Cierra todas las terminales y abre una nueva</li>
+        </ol>
+        
+        <h4>19.3 Instalar y usar versiones de Node.js</h4>
+        <pre><code># Instalar Node.js 22 LTS (recomendado para este SCADA)
+nvm install 22
+
+# Instalar Node.js 18 LTS (para Fuxa u otros proyectos)
+nvm install 18
+
+# Usar Node.js 22 LTS
+nvm use 22
+
+# Usar Node.js 18 LTS
+nvm use 18
+
+# Ver qué versiones tienes instaladas
+nvm list</code></pre>
+        
+        <h4>19.4 Pasos para actualizar este SCADA a Node.js 22 LTS</h4>
+        <ol>
+          <li><strong>Backup</strong>: Asegúrate de tener la carpeta <code>stable/</code> actualizada (última versión estable)</li>
+          <li><strong>Activar Node.js 22</strong>: <code>nvm use 22</code></li>
+          <li><strong>Ir a la carpeta del proyecto</strong>: <code>cd C:\ScadaNode3</code></li>
+          <li><strong>Borrar dependencias antiguas</strong>:
+            <pre><code>Remove-Item -Recurse -Force node_modules
+Remove-Item package-lock.json</code></pre>
+          </li>
+          <li><strong>Reinstalar dependencias</strong>: <code>npm install</code></li>
+          <li><strong>Probar</strong>: <code>npm start</code> (o <code>node server.js</code>)</li>
+        </ol>
+        
+        <h4>19.5 Compatibilidad</h4>
+        <p>Todas las dependencias de este proyecto (<code>express</code>, <code>socket.io</code>, <code>jsmodbus</code>, <code>nodemailer</code>, <code>express-session</code>) son 100% compatibles con Node.js 18, 20, 22 y 24 LTS.</p>
       </section>
     </div>
   </main>
